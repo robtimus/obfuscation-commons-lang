@@ -54,15 +54,10 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
     private static final long serialVersionUID = 1L;
 
-    private static final int OBFUSCATED_TEXT_BUFFER_SIZE = 32;
-
     private final Map<String, Obfuscator> obfuscators;
     private final boolean obfuscateSummaries;
 
-    // obfuscator != null means the current value needs be obfuscated.
-    private Obfuscator obfuscator;
-
-    private final StringBuffer obfuscatedText;
+    private boolean isObfuscating;
 
     /**
      * Creates a new obfuscating {@link ToStringStyle} based on the settings of a builder.
@@ -73,31 +68,29 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
         obfuscators = builder.obfuscators();
         obfuscateSummaries = builder.obfuscateSummaries;
 
-        obfuscator = null;
-        obfuscatedText = new StringBuffer(OBFUSCATED_TEXT_BUFFER_SIZE);
-    }
-
-    private void appendAndClearObfuscatedText(StringBuffer buffer) {
-        buffer.append(obfuscator.obfuscateText(obfuscatedText));
-        obfuscatedText.delete(0, obfuscatedText.length());
+        isObfuscating = false;
     }
 
     final void doAppend(StringBuffer buffer, String fieldName, Consumer<StringBuffer> append) {
-        if (obfuscator == null) {
-            obfuscator = fieldName == null ? null : obfuscators.get(fieldName);
+        if (!isObfuscating) {
+            Obfuscator obfuscator = fieldName == null ? null : obfuscators.get(fieldName);
             if (obfuscator != null) {
-                // start obfuscating; append to obfuscatedText, then append that to buffer when done
-                append.accept(obfuscatedText);
-                appendAndClearObfuscatedText(buffer);
-                obfuscator = null;
-            } else {
-                // no need to obfuscate this field, append to buffer
-                append.accept(buffer);
+                isObfuscating = true;
+                int start = buffer.length();
+                int end = start;
+                try {
+                    append.accept(buffer);
+                    end = buffer.length();
+                    obfuscator.obfuscateText(buffer, start, end, buffer);
+                } finally {
+                    buffer.delete(start, end);
+                    isObfuscating = false;
+                }
+                return;
             }
-        } else {
-            // already obfuscating, append to obfuscatedText instead of buffer
-            append.accept(obfuscatedText);
         }
+        // already obfuscating, or no need to obfuscate this field
+        append.accept(buffer);
     }
 
     @Override
