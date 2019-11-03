@@ -22,8 +22,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -33,16 +33,17 @@ import com.github.robtimus.obfuscation.PropertyAwareBuilder;
 /**
  * A {@link ToStringStyle} that can obfuscate fields.
  * <p>
- * An {@link ObfuscatingToStringStyle} object is not thread safe nor stateless, and should not be reused for multiple objects.
- * However, a {@link Builder} can be safely reused for multiple objects and in multiple threads as long as only its {@link Builder#build()} method is
- * called. For instance, in a class:
+ * An {@code ObfuscatingToStringStyle} object is not thread safe nor stateless, and should not be reused for multiple objects concurrently.
+ * However, a {@link Builder} will build immutable {@link Supplier Suppliers} of {@code ObfuscatingToStringStyle} which can be safely reused
+ * for multiple objects and in multiple threads. Such a {@link Supplier} can be used directly, or perhaps in combination with
+ * {@link ThreadLocal#withInitial(Supplier)}. For instance, in a class:
  * <pre><code>
- * private static final ObfuscatingToStringStyle.Builder TO_STRING_STYLE_BUILDER = ...;
+ * private static final Supplier&lt;ObfuscatingToStringStyle&gt; TO_STRING_STYLE = ObfuscatingToStringStyle.defaultStyle().build();
  *
  * ...
  *
  * public String toString() {
- *     return ToStringBuilder.reflectionToString(this, TO_STRING_STYLE_BUILDER.build());
+ *     return ToStringBuilder.reflectionToString(this, TO_STRING_STYLE.get());
  * }
  * </code></pre>
  * <p>
@@ -62,11 +63,16 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
     /**
      * Creates a new obfuscating {@link ToStringStyle} based on the settings of a builder.
      *
-     * @param builder The builder with the settings for this obfuscating {@link ToStringStyle}.
+     * @param obfuscators The obfuscators to use; most often the result of calling {@link Builder#obfuscators()}.
+     *                        This map is not copied but used as-is; this allows a {@link Supplier} built by a {@link Builder} to create multiple
+     *                        {@code ObfuscatingToStringStyle} objects with the same shared map.
+     * @param obfuscateSummaries {@code true} to obfuscate summaries, or {@code false} otherwise;
+     *                               most often the value set by {@link Builder#withObfuscatedSummaries(boolean)}.
+     * @throws NullPointerException If the given map of obfuscators is {@code null}.
      */
-    protected ObfuscatingToStringStyle(Builder builder) {
-        obfuscators = builder.obfuscators();
-        obfuscateSummaries = builder.obfuscateSummaries;
+    protected ObfuscatingToStringStyle(Map<String, Obfuscator> obfuscators, boolean obfuscateSummaries) {
+        this.obfuscators = Objects.requireNonNull(obfuscators);
+        this.obfuscateSummaries = obfuscateSummaries;
 
         isObfuscating = false;
     }
@@ -265,19 +271,21 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
     }
 
     /**
-     * Returns a builder that creates an obfuscating {@link ToStringStyle} object that produces output similar to {@link ToStringStyle#DEFAULT_STYLE}.
+     * Returns a builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
+     * {@link ToStringStyle#DEFAULT_STYLE}.
      *
-     * @return A builder that creates an obfuscating {@link ToStringStyle} object that produces output similar to {@link ToStringStyle#DEFAULT_STYLE}.
+     * @return A builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
+     *         {@link ToStringStyle#DEFAULT_STYLE}.
      */
     public static Builder defaultStyle() {
         return new Builder(DefaultObfuscatingToStringStyle::new);
     }
 
     /**
-     * Returns a builder that creates an obfuscating {@link ToStringStyle} object that produces output similar to
+     * Returns a builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
      * {@link ToStringStyle#MULTI_LINE_STYLE}.
      *
-     * @return A builder that creates an obfuscating {@link ToStringStyle} object that produces output similar to
+     * @return A builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
      *         {@link ToStringStyle#MULTI_LINE_STYLE}.
      */
     public static Builder multiLineStyle() {
@@ -285,10 +293,10 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
     }
 
     /**
-     * Returns a builder that creates an obfuscating {@link ToStringStyle} object that produces output similar to
+     * Returns a builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
      * {@link ToStringStyle#NO_FIELD_NAMES_STYLE}.
      *
-     * @return A builder that creates an obfuscating {@link ToStringStyle} object that produces output similar to
+     * @return A builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
      *         {@link ToStringStyle#NO_FIELD_NAMES_STYLE}.
      */
     public static Builder noFieldNamesStyle() {
@@ -296,10 +304,10 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
     }
 
     /**
-     * Returns a builder that creates an obfuscating {@link ToStringStyle} object that produces output similar to
+     * Returns a builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
      * {@link ToStringStyle#SHORT_PREFIX_STYLE}.
      *
-     * @return A builder that creates an obfuscating {@link ToStringStyle} object that produces output similar to
+     * @return A builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
      *         {@link ToStringStyle#SHORT_PREFIX_STYLE}.
      */
     public static Builder shortPrefixStyle() {
@@ -307,19 +315,21 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
     }
 
     /**
-     * Returns a builder that creates an obfuscating {@link ToStringStyle} object that produces output similar to {@link ToStringStyle#SIMPLE_STYLE}.
+     * Returns a builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
+     * {@link ToStringStyle#SIMPLE_STYLE}.
      *
-     * @return A builder that creates an obfuscating {@link ToStringStyle} object that produces output similar to {@link ToStringStyle#SIMPLE_STYLE}.
+     * @return A builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
+     *         {@link ToStringStyle#SIMPLE_STYLE}.
      */
     public static Builder simpleStyle() {
         return new Builder(SimpleObfuscatingToStringStyle::new);
     }
 
     /**
-     * Returns a builder that creates an obfuscating {@link ToStringStyle} object that produces output similar to
+     * Returns a builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
      * {@link ToStringStyle#NO_CLASS_NAME_STYLE}.
      *
-     * @return A builder that creates an obfuscating {@link ToStringStyle} object that produces output similar to
+     * @return A builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
      *         {@link ToStringStyle#NO_CLASS_NAME_STYLE}.
      */
     public static Builder noClassNameStyle() {
@@ -327,11 +337,11 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
     }
 
     /**
-     * Returns a builder that creates an obfuscating {@link ToStringStyle} object that produces output similar to
+     * Returns a builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
      * {@link org.apache.commons.lang3.builder.RecursiveToStringStyle RecursiveToStringStyle}.
      * This method is similar to calling {@link #recursiveStyle(Predicate)} with a predicate that always returns {@code true}.
      *
-     * @return A builder that creates an obfuscating {@link ToStringStyle} object that produces output similar to
+     * @return A builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
      *         {@link org.apache.commons.lang3.builder.RecursiveToStringStyle RecursiveToStringStyle}.
      */
     public static Builder recursiveStyle() {
@@ -339,25 +349,25 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
     }
 
     /**
-     * Returns a builder that creates an obfuscating {@link ToStringStyle} object that produces output similar to
+     * Returns a builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
      * {@link org.apache.commons.lang3.builder.RecursiveToStringStyle RecursiveToStringStyle}.
      *
      * @param recurseIntoPredicate A predicate that determines which classes are recursively formatted.
      *                                 Note that primitive types, primitive wrappers and {@link String} are never recursively formatted.
-     * @return A builder that creates an obfuscating {@link ToStringStyle} object that produces output similar to
+     * @return A builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
      *         {@link org.apache.commons.lang3.builder.RecursiveToStringStyle RecursiveToStringStyle}.
      */
     public static Builder recursiveStyle(Predicate<? super Class<?>> recurseIntoPredicate) {
         Objects.requireNonNull(recurseIntoPredicate);
-        return new Builder(b -> new RecursiveObfuscatingToStringStyle(b, recurseIntoPredicate));
+        return new Builder((obfuscators, summaries) -> new RecursiveObfuscatingToStringStyle(obfuscators, summaries, recurseIntoPredicate));
     }
 
     /**
-     * Returns a builder that creates an obfuscating {@link ToStringStyle} object that produces output similar to
+     * Returns a builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
      * {@link org.apache.commons.lang3.builder.MultilineRecursiveToStringStyle MultilineRecursiveToStringStyle}.
      * This method is similar to calling {@link #recursiveStyle(Predicate)} with a predicate that always returns {@code true}.
      *
-     * @return A builder that creates an obfuscating {@link ToStringStyle} object that produces output similar to
+     * @return A builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
      *         {@link org.apache.commons.lang3.builder.RecursiveToStringStyle RecursiveToStringStyle}.
      */
     public static Builder multiLineRecursiveStyle() {
@@ -365,42 +375,63 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
     }
 
     /**
-     * Returns a builder that creates an obfuscating {@link ToStringStyle} object that produces output similar to
+     * Returns a builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
      * {@link org.apache.commons.lang3.builder.MultilineRecursiveToStringStyle MultilineRecursiveToStringStyle}.
      *
      * @param recurseIntoPredicate A predicate that determines which classes are recursively formatted.
      *                                 Note that primitive types, primitive wrappers and {@link String} are never recursively formatted.
-     * @return A builder that creates an obfuscating {@link ToStringStyle} object that produces output similar to
+     * @return A builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
      *         {@link org.apache.commons.lang3.builder.RecursiveToStringStyle RecursiveToStringStyle}.
      */
     public static Builder multiLineRecursiveStyle(Predicate<? super Class<?>> recurseIntoPredicate) {
         Objects.requireNonNull(recurseIntoPredicate);
-        return new Builder(b -> new MultiLineRecursiveObfuscatingToStringStyle(b, recurseIntoPredicate));
+        return new Builder((obfuscators, summaries) -> new MultiLineRecursiveObfuscatingToStringStyle(obfuscators, summaries, recurseIntoPredicate));
     }
 
     /**
-     * A builder for creating obfuscating {@link ToStringStyle} objects.
+     * A factory for creating {@link ObfuscatingToStringStyle ObfuscatingToStringStyles}.
+     * <p>
+     * In most cases, a constructor of a sub class of {@link ObfuscatingToStringStyle} that delegates to
+     * {@link ObfuscatingToStringStyle#ObfuscatingToStringStyle(Map, boolean)} is used for this factory.
+     *
+     * @author Rob Spoor
+     * @param <T> The type of {@link ObfuscatingToStringStyle} to create.
+     */
+    interface Factory<T extends ObfuscatingToStringStyle> {
+
+        /**
+         * Creates a new {@link ObfuscatingToStringStyle} object.
+         *
+         * @param obfuscators The obfuscators to use.
+         * @param obfuscateSummaries {@code true} to obfuscate summaries, or {@code false} otherwise.
+         * @return A new {@link ObfuscatingToStringStyle} object.
+         */
+        T create(Map<String, Obfuscator> obfuscators, boolean obfuscateSummaries);
+    }
+
+    /**
+     * A builder for creating {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects.
      *
      * @author Rob Spoor
      */
-    public static final class Builder extends PropertyAwareBuilder<Builder, ObfuscatingToStringStyle> {
+    public static final class Builder extends PropertyAwareBuilder<Builder, Supplier<ObfuscatingToStringStyle>> {
 
-        private final Function<? super Builder, ? extends ObfuscatingToStringStyle> factory;
+        private final Factory<?> factory;
 
         private boolean obfuscateSummaries = false;
 
         /**
          * Creates a new builder.
          * <p>
-         * This builder will use a factory to build {@link ObfuscatingToStringStyle ObfuscatingToStringStyles} based on this builder.
-         * This allows the building of sub classes of {@link ObfuscatingToStringStyle}; just provide a constructor that takes a {@code Builder} which
-         * delegates to {@link ObfuscatingToStringStyle#ObfuscatingToStringStyle(Builder)}, and provide this constructor as factory to this
-         * constructor.
+         * This builder will use a factory to build {@link Supplier Suppliers} of {@link ObfuscatingToStringStyle ObfuscatingToStringStyles} based on
+         * this builder. This allows the building of {@link Supplier Suppliers} of sub classes of {@link ObfuscatingToStringStyle}; just create a
+         * constructor that delegates to {@link ObfuscatingToStringStyle#ObfuscatingToStringStyle(Map, boolean)}, and provide this constructor as
+         * factory to this constructor.
          *
          * @param factory The factory to build {@link ObfuscatingToStringStyle ObfuscatingToStringStyles} based on this builder.
          * @throws NullPointerException If the given factory is {@code null}.
          */
-        public Builder(Function<? super Builder, ? extends ObfuscatingToStringStyle> factory) {
+        public Builder(Factory<?> factory) {
             this.factory = Objects.requireNonNull(factory);
         }
 
@@ -416,8 +447,12 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
         }
 
         @Override
-        public ObfuscatingToStringStyle build() {
-            return factory.apply(this);
+        public Supplier<ObfuscatingToStringStyle> build() {
+            // capture the current settings
+            Map<String, Obfuscator> currentObfuscators = obfuscators();
+            boolean currentObfuscateSummaries = obfuscateSummaries;
+
+            return () -> factory.create(currentObfuscators, currentObfuscateSummaries);
         }
     }
 
@@ -425,8 +460,8 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
         private static final long serialVersionUID = 1L;
 
-        private DefaultObfuscatingToStringStyle(Builder builder) {
-            super(builder);
+        private DefaultObfuscatingToStringStyle(Map<String, Obfuscator> obfuscators, boolean obfuscateSummaries) {
+            super(obfuscators, obfuscateSummaries);
             // no modifications
         }
     }
@@ -435,8 +470,8 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
         private static final long serialVersionUID = 1L;
 
-        private MultiLineObfuscatingToStringStyle(Builder builder) {
-            super(builder);
+        private MultiLineObfuscatingToStringStyle(Map<String, Obfuscator> obfuscators, boolean obfuscateSummaries) {
+            super(obfuscators, obfuscateSummaries);
             setContentStart("["); //$NON-NLS-1$
             setFieldSeparator(System.lineSeparator() + "  "); //$NON-NLS-1$
             setFieldSeparatorAtStart(true);
@@ -448,8 +483,8 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
         private static final long serialVersionUID = 1L;
 
-        private NoFieldNamesObfuscatingToStringStyle(Builder builder) {
-            super(builder);
+        private NoFieldNamesObfuscatingToStringStyle(Map<String, Obfuscator> obfuscators, boolean obfuscateSummaries) {
+            super(obfuscators, obfuscateSummaries);
             setUseFieldNames(false);
         }
     }
@@ -458,8 +493,8 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
         private static final long serialVersionUID = 1L;
 
-        private ShortPrefixObfuscatingToStringStyle(Builder builder) {
-            super(builder);
+        private ShortPrefixObfuscatingToStringStyle(Map<String, Obfuscator> obfuscators, boolean obfuscateSummaries) {
+            super(obfuscators, obfuscateSummaries);
             setUseShortClassName(true);
             setUseIdentityHashCode(false);
         }
@@ -469,8 +504,8 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
         private static final long serialVersionUID = 1L;
 
-        private SimpleObfuscatingToStringStyle(Builder builder) {
-            super(builder);
+        private SimpleObfuscatingToStringStyle(Map<String, Obfuscator> obfuscators, boolean obfuscateSummaries) {
+            super(obfuscators, obfuscateSummaries);
             setUseClassName(false);
             setUseIdentityHashCode(false);
             setUseFieldNames(false);
@@ -483,8 +518,8 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
         private static final long serialVersionUID = 1L;
 
-        private NoClassNameObfuscatingToStringStyle(Builder builder) {
-            super(builder);
+        private NoClassNameObfuscatingToStringStyle(Map<String, Obfuscator> obfuscators, boolean obfuscateSummaries) {
+            super(obfuscators, obfuscateSummaries);
             setUseClassName(false);
             setUseIdentityHashCode(false);
         }
@@ -496,8 +531,10 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
         private final Predicate<? super Class<?>> recurseIntoPredicate;
 
-        RecursiveObfuscatingToStringStyle(Builder builder, Predicate<? super Class<?>> recurseIntoPredicate) {
-            super(builder);
+        RecursiveObfuscatingToStringStyle(Map<String, Obfuscator> obfuscators, boolean obfuscateSummaries,
+                Predicate<? super Class<?>> recurseIntoPredicate) {
+
+            super(obfuscators, obfuscateSummaries);
 
             this.recurseIntoPredicate = Objects.requireNonNull(recurseIntoPredicate);
         }
@@ -528,8 +565,10 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
         private int currentIndent;
 
-        private MultiLineRecursiveObfuscatingToStringStyle(Builder builder, Predicate<? super Class<?>> recurseIntoPredicate) {
-            super(builder, recurseIntoPredicate);
+        private MultiLineRecursiveObfuscatingToStringStyle(Map<String, Obfuscator> obfuscators, boolean obfuscateSummaries,
+                Predicate<? super Class<?>> recurseIntoPredicate) {
+
+            super(obfuscators, obfuscateSummaries, recurseIntoPredicate);
 
             setIndent(1);
         }
@@ -546,6 +585,14 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
             setContentStart(indented('[', lineSeparator, currentIndent));
             setFieldSeparator(indented(',', lineSeparator, currentIndent));
             setContentEnd(indented(lineSeparator, currentIndent - 1, ']'));
+        }
+
+        private void increaseIndent() {
+            setIndent(currentIndent + 1);
+        }
+
+        private void decreaseIndent() {
+            setIndent(currentIndent - 1);
         }
 
         /**
@@ -579,12 +626,15 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
         @Override
         protected void appendDetail(StringBuffer buffer, String fieldName, Object value) {
             if (shouldRecurseInto(value)) {
-                setIndent(currentIndent + 1);
-                doAppend(buffer, fieldName, b -> {
-                    // ignore the result of toString(), since the new ReflectionToStringBuilder will share the buffer and append directly to it
-                    new ReflectionToStringBuilder(value, this, b).toString();
-                });
-                setIndent(currentIndent - 1);
+                increaseIndent();
+                try {
+                    doAppend(buffer, fieldName, b -> {
+                        // ignore the result of toString(), since the new ReflectionToStringBuilder will share the buffer and append directly to it
+                        new ReflectionToStringBuilder(value, this, b).toString();
+                    });
+                } finally {
+                    decreaseIndent();
+                }
             } else {
                 super.appendDetail(buffer, fieldName, value);
             }
@@ -592,86 +642,122 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
         @Override
         protected void appendDetail(StringBuffer buffer, String fieldName, Collection<?> coll) {
-            setIndent(currentIndent + 1);
-            super.appendDetail(buffer, fieldName, coll);
-            setIndent(currentIndent - 1);
+            increaseIndent();
+            try {
+                super.appendDetail(buffer, fieldName, coll);
+            } finally {
+                decreaseIndent();
+            }
         }
 
         @Override
         protected void appendDetail(StringBuffer buffer, String fieldName, Map<?, ?> map) {
-            setIndent(currentIndent + 1);
-            super.appendDetail(buffer, fieldName, map);
-            setIndent(currentIndent - 1);
+            increaseIndent();
+            try {
+                super.appendDetail(buffer, fieldName, map);
+            } finally {
+                decreaseIndent();
+            }
         }
 
         @Override
         protected void appendDetail(StringBuffer buffer, String fieldName, Object[] array) {
-            setIndent(currentIndent + 1);
-            super.appendDetail(buffer, fieldName, array);
-            setIndent(currentIndent - 1);
+            increaseIndent();
+            try {
+                super.appendDetail(buffer, fieldName, array);
+            } finally {
+                decreaseIndent();
+            }
         }
 
         @Override
         protected void reflectionAppendArrayDetail(StringBuffer buffer, String fieldName, Object array) {
-            setIndent(currentIndent + 1);
-            super.reflectionAppendArrayDetail(buffer, fieldName, array);
-            setIndent(currentIndent - 1);
+            increaseIndent();
+            try {
+                super.reflectionAppendArrayDetail(buffer, fieldName, array);
+            } finally {
+                decreaseIndent();
+            }
         }
 
         @Override
         protected void appendDetail(StringBuffer buffer, String fieldName, long[] array) {
-            setIndent(currentIndent + 1);
-            super.appendDetail(buffer, fieldName, array);
-            setIndent(currentIndent - 1);
+            increaseIndent();
+            try {
+                super.appendDetail(buffer, fieldName, array);
+            } finally {
+                decreaseIndent();
+            }
         }
 
         @Override
         protected void appendDetail(StringBuffer buffer, String fieldName, int[] array) {
-            setIndent(currentIndent + 1);
-            super.appendDetail(buffer, fieldName, array);
-            setIndent(currentIndent - 1);
+            increaseIndent();
+            try {
+                super.appendDetail(buffer, fieldName, array);
+            } finally {
+                decreaseIndent();
+            }
         }
 
         @Override
         protected void appendDetail(StringBuffer buffer, String fieldName, short[] array) {
-            setIndent(currentIndent + 1);
-            super.appendDetail(buffer, fieldName, array);
-            setIndent(currentIndent - 1);
+            increaseIndent();
+            try {
+                super.appendDetail(buffer, fieldName, array);
+            } finally {
+                decreaseIndent();
+            }
         }
 
         @Override
         protected void appendDetail(StringBuffer buffer, String fieldName, byte[] array) {
-            setIndent(currentIndent + 1);
-            super.appendDetail(buffer, fieldName, array);
-            setIndent(currentIndent - 1);
+            increaseIndent();
+            try {
+                super.appendDetail(buffer, fieldName, array);
+            } finally {
+                decreaseIndent();
+            }
         }
 
         @Override
         protected void appendDetail(StringBuffer buffer, String fieldName, char[] array) {
-            setIndent(currentIndent + 1);
-            super.appendDetail(buffer, fieldName, array);
-            setIndent(currentIndent - 1);
+            increaseIndent();
+            try {
+                super.appendDetail(buffer, fieldName, array);
+            } finally {
+                decreaseIndent();
+            }
         }
 
         @Override
         protected void appendDetail(StringBuffer buffer, String fieldName, double[] array) {
-            setIndent(currentIndent + 1);
-            super.appendDetail(buffer, fieldName, array);
-            setIndent(currentIndent - 1);
+            increaseIndent();
+            try {
+                super.appendDetail(buffer, fieldName, array);
+            } finally {
+                decreaseIndent();
+            }
         }
 
         @Override
         protected void appendDetail(StringBuffer buffer, String fieldName, float[] array) {
-            setIndent(currentIndent + 1);
-            super.appendDetail(buffer, fieldName, array);
-            setIndent(currentIndent - 1);
+            increaseIndent();
+            try {
+                super.appendDetail(buffer, fieldName, array);
+            } finally {
+                decreaseIndent();
+            }
         }
 
         @Override
         protected void appendDetail(StringBuffer buffer, String fieldName, boolean[] array) {
-            setIndent(currentIndent + 1);
-            super.appendDetail(buffer, fieldName, array);
-            setIndent(currentIndent - 1);
+            increaseIndent();
+            try {
+                super.appendDetail(buffer, fieldName, array);
+            } finally {
+                decreaseIndent();
+            }
         }
     }
 }
