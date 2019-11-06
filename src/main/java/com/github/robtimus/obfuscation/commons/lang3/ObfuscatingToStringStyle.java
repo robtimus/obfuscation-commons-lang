@@ -33,12 +33,14 @@ import com.github.robtimus.obfuscation.PropertyAwareBuilder;
 /**
  * A {@link ToStringStyle} that can obfuscate fields.
  * <p>
- * An {@code ObfuscatingToStringStyle} object is not thread safe nor stateless, and should not be reused for multiple objects concurrently.
- * However, a {@link Builder} will build immutable {@link Supplier Suppliers} of {@code ObfuscatingToStringStyle} which can be safely reused
+ * An {@code ObfuscatingToStringStyle} object is not thread safe nor stateless, and should not be reused for multiple objects <i>concurrently</i>.
+ * However, a {@link Builder} can build immutable {@link Supplier Suppliers} of {@code ObfuscatingToStringStyle} which can be safely reused
  * for multiple objects and in multiple threads. Such a {@link Supplier} can be used directly, or perhaps in combination with
  * {@link ThreadLocal#withInitial(Supplier)}. For instance, in a class:
  * <pre><code>
- * private static final Supplier&lt;ObfuscatingToStringStyle&gt; TO_STRING_STYLE = ObfuscatingToStringStyle.defaultStyle().build();
+ * private static final Supplier&lt;ObfuscatingToStringStyle&gt; TO_STRING_STYLE = ObfuscatingToStringStyle.defaultStyle()
+ *         ...
+ *         .supplier();
  *
  * ...
  *
@@ -271,32 +273,28 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
     }
 
     /**
-     * Returns a builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
-     * {@link ToStringStyle#DEFAULT_STYLE}.
+     * Returns a builder that creates obfuscating {@link ToStringStyle} objects that produce output similar to {@link ToStringStyle#DEFAULT_STYLE}.
      *
-     * @return A builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
-     *         {@link ToStringStyle#DEFAULT_STYLE}.
+     * @return A builder that creates obfuscating {@link ToStringStyle} objects that produce output similar to {@link ToStringStyle#DEFAULT_STYLE}.
      */
     public static Builder defaultStyle() {
         return new Builder(DefaultObfuscatingToStringStyle::new);
     }
 
     /**
-     * Returns a builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
-     * {@link ToStringStyle#MULTI_LINE_STYLE}.
+     * Returns a builder that creates obfuscating {@link ToStringStyle} objects that produce output similar to {@link ToStringStyle#MULTI_LINE_STYLE}.
      *
-     * @return A builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
-     *         {@link ToStringStyle#MULTI_LINE_STYLE}.
+     * @return A builder that creates obfuscating {@link ToStringStyle} objects that produce output similar to {@link ToStringStyle#MULTI_LINE_STYLE}.
      */
     public static Builder multiLineStyle() {
         return new Builder(MultiLineObfuscatingToStringStyle::new);
     }
 
     /**
-     * Returns a builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
+     * Returns a builder that creates obfuscating {@link ToStringStyle} objects that produce output similar to
      * {@link ToStringStyle#NO_FIELD_NAMES_STYLE}.
      *
-     * @return A builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
+     * @return A builder that creates obfuscating {@link ToStringStyle} objects that produce output similar to
      *         {@link ToStringStyle#NO_FIELD_NAMES_STYLE}.
      */
     public static Builder noFieldNamesStyle() {
@@ -304,10 +302,10 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
     }
 
     /**
-     * Returns a builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
+     * Returns a builder that creates obfuscating {@link ToStringStyle} objects that produce output similar to
      * {@link ToStringStyle#SHORT_PREFIX_STYLE}.
      *
-     * @return A builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
+     * @return A builder that creates obfuscating {@link ToStringStyle} objects that produce output similar to
      *         {@link ToStringStyle#SHORT_PREFIX_STYLE}.
      */
     public static Builder shortPrefixStyle() {
@@ -315,21 +313,19 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
     }
 
     /**
-     * Returns a builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
-     * {@link ToStringStyle#SIMPLE_STYLE}.
+     * Returns a builder that creates obfuscating {@link ToStringStyle} objects that produce output similar to {@link ToStringStyle#SIMPLE_STYLE}.
      *
-     * @return A builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
-     *         {@link ToStringStyle#SIMPLE_STYLE}.
+     * @return A builder that creates obfuscating {@link ToStringStyle} objects that produce output similar to {@link ToStringStyle#SIMPLE_STYLE}.
      */
     public static Builder simpleStyle() {
         return new Builder(SimpleObfuscatingToStringStyle::new);
     }
 
     /**
-     * Returns a builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
+     * Returns a builder that creates obfuscating {@link ToStringStyle} objects that produce output similar to
      * {@link ToStringStyle#NO_CLASS_NAME_STYLE}.
      *
-     * @return A builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
+     * @return A builder that creates obfuscating {@link ToStringStyle} objects that produce output similar to
      *         {@link ToStringStyle#NO_CLASS_NAME_STYLE}.
      */
     public static Builder noClassNameStyle() {
@@ -337,11 +333,11 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
     }
 
     /**
-     * Returns a builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
+     * Returns a builder that creates obfuscating {@link ToStringStyle} objects that produce output similar to
      * {@link org.apache.commons.lang3.builder.RecursiveToStringStyle RecursiveToStringStyle}.
      * This method is similar to calling {@link #recursiveStyle(Predicate)} with a predicate that always returns {@code true}.
      *
-     * @return A builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
+     * @return A builder that creates obfuscating {@link ToStringStyle} objects that produce output similar to
      *         {@link org.apache.commons.lang3.builder.RecursiveToStringStyle RecursiveToStringStyle}.
      */
     public static Builder recursiveStyle() {
@@ -349,12 +345,12 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
     }
 
     /**
-     * Returns a builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
+     * Returns a builder that creates obfuscating {@link ToStringStyle} objects that produce output similar to
      * {@link org.apache.commons.lang3.builder.RecursiveToStringStyle RecursiveToStringStyle}.
      *
      * @param recurseIntoPredicate A predicate that determines which classes are recursively formatted.
      *                                 Note that primitive types, primitive wrappers and {@link String} are never recursively formatted.
-     * @return A builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
+     * @return A builder that creates obfuscating {@link ToStringStyle} objects that produce output similar to
      *         {@link org.apache.commons.lang3.builder.RecursiveToStringStyle RecursiveToStringStyle}.
      */
     public static Builder recursiveStyle(Predicate<? super Class<?>> recurseIntoPredicate) {
@@ -363,11 +359,11 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
     }
 
     /**
-     * Returns a builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
+     * Returns a builder that creates obfuscating {@link ToStringStyle} objects that produce output similar to
      * {@link org.apache.commons.lang3.builder.MultilineRecursiveToStringStyle MultilineRecursiveToStringStyle}.
      * This method is similar to calling {@link #recursiveStyle(Predicate)} with a predicate that always returns {@code true}.
      *
-     * @return A builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
+     * @return A builder that creates obfuscating {@link ToStringStyle} objects that produce output similar to
      *         {@link org.apache.commons.lang3.builder.RecursiveToStringStyle RecursiveToStringStyle}.
      */
     public static Builder multiLineRecursiveStyle() {
@@ -375,12 +371,12 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
     }
 
     /**
-     * Returns a builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
+     * Returns a builder that creates obfuscating {@link ToStringStyle} objects that produce output similar to
      * {@link org.apache.commons.lang3.builder.MultilineRecursiveToStringStyle MultilineRecursiveToStringStyle}.
      *
      * @param recurseIntoPredicate A predicate that determines which classes are recursively formatted.
      *                                 Note that primitive types, primitive wrappers and {@link String} are never recursively formatted.
-     * @return A builder that creates {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects that produce output similar to
+     * @return A builder that creates obfuscating {@link ToStringStyle} objects that produce output similar to
      *         {@link org.apache.commons.lang3.builder.RecursiveToStringStyle RecursiveToStringStyle}.
      */
     public static Builder multiLineRecursiveStyle(Predicate<? super Class<?>> recurseIntoPredicate) {
@@ -410,11 +406,16 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
     }
 
     /**
-     * A builder for creating {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects.
+     * A builder for creating obfuscating {@link ToStringStyle} objects.
+     * In addition, it can create {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects. These can be used as a more light-weight
+     * way of creating obfuscating {@link ToStringStyle} objects; whereas creating obfuscating {@link ToStringStyle} objects using {@link #build()}
+     * will always call {@link #obfuscators()}, {@link Supplier Suppliers} created using {@link #supplier()} will create obfuscating
+     * {@link ToStringStyle} objects from a shared copy instead. You should use {@link #supplier()} instead of {@link #build()} if you plan on
+     * creating multiple obfuscating {@link ToStringStyle} objects with the same settings.
      *
      * @author Rob Spoor
      */
-    public static final class Builder extends PropertyAwareBuilder<Builder, Supplier<ObfuscatingToStringStyle>> {
+    public static final class Builder extends PropertyAwareBuilder<Builder, ObfuscatingToStringStyle> {
 
         private final Factory<?> factory;
 
@@ -447,7 +448,20 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
         }
 
         @Override
-        public Supplier<ObfuscatingToStringStyle> build() {
+        public ObfuscatingToStringStyle build() {
+            return factory.create(obfuscators(), obfuscateSummaries);
+        }
+
+        /**
+         * Creates a new {@link Supplier} that will create obfuscating {@link ToStringStyle} objects with the properties and obfuscators added to this
+         * builder. Unlike {@link #build()}, this method will create a snapshot of the current settings of this builder and reuses those to create
+         * obfuscating {@link ToStringStyle} objects. This makes this method more light-weight when you need to create multiple obfuscating
+         * {@link ToStringStyle} objects with the current settings of this builder.
+         *
+         * @return A new {@link Supplier} that will create obfuscating {@link ToStringStyle} objects with the properties and obfuscators added to this
+         *         builder
+         */
+        public Supplier<ObfuscatingToStringStyle> supplier() {
             // capture the current settings
             Map<String, Obfuscator> currentObfuscators = obfuscators();
             boolean currentObfuscateSummaries = obfuscateSummaries;

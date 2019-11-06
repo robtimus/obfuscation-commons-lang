@@ -320,7 +320,10 @@ public class ObfuscatingToStringStyleTest {
             TestObject testObject = new TestObject();
             testObject.nested = new TestObject();
             testObject.notObfuscated = new TestObject();
-            String string = ToStringBuilder.reflectionToString(testObject, builderSupplier.get().build().get());
+            String string = ToStringBuilder.reflectionToString(testObject, builderSupplier.get().build());
+            assertEquals(expectedReflectionToString.apply(testObject).replace("\r", ""), string.replace("\r", ""));
+
+            string = ToStringBuilder.reflectionToString(testObject, builderSupplier.get().supplier().get());
             assertEquals(expectedReflectionToString.apply(testObject).replace("\r", ""), string.replace("\r", ""));
         }
 
@@ -347,7 +350,7 @@ public class ObfuscatingToStringStyleTest {
             }
 
             private String createTestString(TestObject testObject, boolean withObfuscateSummaries) {
-                return new ToStringBuilder(testObject, builderSupplier.get().withObfuscatedSummaries(withObfuscateSummaries).build().get())
+                return new ToStringBuilder(testObject, builderSupplier.get().withObfuscatedSummaries(withObfuscateSummaries).build())
                         .append(testObject.booleanValue)
                         .append(testObject.booleanArray)
                         .append(testObject.byteValue)
