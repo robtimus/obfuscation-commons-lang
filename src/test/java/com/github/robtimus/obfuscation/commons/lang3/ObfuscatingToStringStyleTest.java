@@ -58,6 +58,7 @@ public class ObfuscatingToStringStyleTest {
         public DefaultStyle() {
             super(() -> configureBuilder(defaultStyle()),
                     ObfuscatingToStringStyleTest::expectedReflectionToStringForDefaultStyle,
+                    ObfuscatingToStringStyleTest::expectedArrayReflectionToStringForDefaultStyle,
                     ObfuscatingToStringStyleTest::expectedToStringBuilderWithObfuscateSummariesForDefaultStyle,
                     ObfuscatingToStringStyleTest::expectedToStringBuilderWithoutObfuscateSummariesForDefaultStyle);
         }
@@ -66,6 +67,11 @@ public class ObfuscatingToStringStyleTest {
     private static String expectedReflectionToStringForDefaultStyle(TestObject testObject) {
         return readResource("defaultStyle.reflectionToString.expected")
                 .replace("<<TESTOBJECT>>", ObjectUtils.identityToString(testObject));
+    }
+
+    private static String expectedArrayReflectionToStringForDefaultStyle(TestObject[] testArray) {
+        return readResource("defaultStyle.reflectionToString.array.expected")
+                .replace("<<TESTARRAY>>", ObjectUtils.identityToString(testArray));
     }
 
     private static String expectedToStringBuilderWithObfuscateSummariesForDefaultStyle(TestObject testObject) {
@@ -85,6 +91,7 @@ public class ObfuscatingToStringStyleTest {
         public MultiLineStyle() {
             super(() -> configureBuilder(multiLineStyle()),
                     ObfuscatingToStringStyleTest::expectedReflectionToStringForMultiLineStyle,
+                    ObfuscatingToStringStyleTest::expectedArrayReflectionToStringForMultiLineStyle,
                     ObfuscatingToStringStyleTest::expectedToStringBuilderWithObfuscateSummariesForMultiLineStyle,
                     ObfuscatingToStringStyleTest::expectedToStringBuilderWithoutObfuscateSummariesForMultiLineStyle);
         }
@@ -105,6 +112,11 @@ public class ObfuscatingToStringStyleTest {
                 .replace("<<TESTOBJECT>>", ObjectUtils.identityToString(testObject));
     }
 
+    private static String expectedArrayReflectionToStringForMultiLineStyle(TestObject[] testArray) {
+        return readResource("multiLineStyle.reflectionToString.array.expected")
+                .replace("<<TESTARRAY>>", ObjectUtils.identityToString(testArray));
+    }
+
     private static String expectedToStringBuilderWithObfuscateSummariesForMultiLineStyle(TestObject testObject) {
         return readResource("multiLineStyle.ToStringBuilder.withObfuscateSummaries.expected")
                 .replace("<<TESTOBJECT>>", ObjectUtils.identityToString(testObject));
@@ -122,6 +134,7 @@ public class ObfuscatingToStringStyleTest {
         public NoFieldNamesStyle() {
             super(() -> configureBuilder(noFieldNamesStyle()),
                     ObfuscatingToStringStyleTest::expectedReflectionToStringForNoFieldNamesStyle,
+                    ObfuscatingToStringStyleTest::expectedArrayReflectionToStringForNoFieldNamesStyle,
                     ObfuscatingToStringStyleTest::expectedToStringBuilderWithSummarForNoFieldNamesStyle,
                     ObfuscatingToStringStyleTest::expectedToStringBuilderWithoutSummarForNoFieldNamesStyle);
         }
@@ -130,6 +143,11 @@ public class ObfuscatingToStringStyleTest {
     private static String expectedReflectionToStringForNoFieldNamesStyle(TestObject testObject) {
         return readResource("noFieldNamesStyle.reflectionToString.expected")
                 .replace("<<TESTOBJECT>>", ObjectUtils.identityToString(testObject));
+    }
+
+    private static String expectedArrayReflectionToStringForNoFieldNamesStyle(TestObject[] testArray) {
+        return readResource("noFieldNamesStyle.reflectionToString.array.expected")
+                .replace("<<TESTARRAY>>", ObjectUtils.identityToString(testArray));
     }
 
     private static String expectedToStringBuilderWithSummarForNoFieldNamesStyle(TestObject testObject) {
@@ -149,6 +167,7 @@ public class ObfuscatingToStringStyleTest {
         public ShortPrefixStyle() {
             super(() -> configureBuilder(shortPrefixStyle()),
                     ObfuscatingToStringStyleTest::expectedReflectionToStringForShortPrefixStyle,
+                    ObfuscatingToStringStyleTest::expectedArrayReflectionToStringForShortPrefixStyle,
                     o -> expectedToStringBuilderWithObfuscateSummariesForShortPrefixStyle(),
                     o -> expectedToStringBuilderWithoutObfuscateSummariesForShortPrefixStyle());
         }
@@ -157,6 +176,11 @@ public class ObfuscatingToStringStyleTest {
     private static String expectedReflectionToStringForShortPrefixStyle(TestObject testObject) {
         return readResource("shortPrefixStyle.reflectionToString.expected")
                 .replace("<<TESTOBJECT>>", ObjectUtils.identityToString(testObject));
+    }
+
+    private static String expectedArrayReflectionToStringForShortPrefixStyle(TestObject[] testArray) {
+        return readResource("shortPrefixStyle.reflectionToString.array.expected")
+                .replace("<<TESTARRAY>>", ObjectUtils.identityToString(testArray));
     }
 
     private static String expectedToStringBuilderWithObfuscateSummariesForShortPrefixStyle() {
@@ -174,6 +198,7 @@ public class ObfuscatingToStringStyleTest {
         public SimpleStyle() {
             super(() -> configureBuilder(simpleStyle()),
                     ObfuscatingToStringStyleTest::expectedReflectionToStringForSimpleStyle,
+                    ObfuscatingToStringStyleTest::expectedArrayReflectionToStringForSimpleStyle,
                     o -> expectedToStringBuilderWithObfuscateSummariesForSimpleStyle(),
                     o -> expectedToStringBuilderWithoutObfuscateSummariesForSimpleStyle());
         }
@@ -194,6 +219,11 @@ public class ObfuscatingToStringStyleTest {
                 .replace("<<TESTOBJECT>>", testObject.toString());
     }
 
+    private static String expectedArrayReflectionToStringForSimpleStyle(TestObject[] testArray) {
+        return readResource("simpleStyle.reflectionToString.array.expected")
+                .replace("<<TESTARRAY>>", testArray.toString());
+    }
+
     private static String expectedToStringBuilderWithObfuscateSummariesForSimpleStyle() {
         return readResource("simpleStyle.ToStringBuilder.withObfuscateSummaries.expected");
     }
@@ -209,6 +239,7 @@ public class ObfuscatingToStringStyleTest {
         public NoClassNameStyle() {
             super(() -> configureBuilder(noClassNameStyle()),
                     ObfuscatingToStringStyleTest::expectedReflectionToStringForNoClassNameStyle,
+                    ObfuscatingToStringStyleTest::expectedArrayReflectionToStringForNoClassNameStyle,
                     o -> expectedToStringBuilderWithObfuscateSummariesForNoClassNameStyle(),
                     o -> expectedToStringBuilderWithoutObfuscateSummariesForNoClassNameStyle());
         }
@@ -217,6 +248,11 @@ public class ObfuscatingToStringStyleTest {
     private static String expectedReflectionToStringForNoClassNameStyle(TestObject testObject) {
         return readResource("noClassNameStyle.reflectionToString.expected")
                 .replace("<<TESTOBJECT>>", testObject.toString());
+    }
+
+    private static String expectedArrayReflectionToStringForNoClassNameStyle(TestObject[] testArray) {
+        return readResource("noClassNameStyle.reflectionToString.array.expected")
+                .replace("<<TESTOBJECT>>", testArray.toString());
     }
 
     private static String expectedToStringBuilderWithObfuscateSummariesForNoClassNameStyle() {
@@ -234,6 +270,7 @@ public class ObfuscatingToStringStyleTest {
         public RecursiveStyle() {
             super(() -> configureBuilder(recursiveStyle(c -> c != Date.class)),
                     ObfuscatingToStringStyleTest::expectedReflectionToStringForRecursiveStyle,
+                    ObfuscatingToStringStyleTest::expectedArrayReflectionToStringForRecursiveStyle,
                     ObfuscatingToStringStyleTest::expectedToStringBuilderWithObfuscateSummariesForRecursiveStyle,
                     ObfuscatingToStringStyleTest::expectedToStringBuilderWithoutObfuscateSummariesForRecursiveStyle);
         }
@@ -244,6 +281,14 @@ public class ObfuscatingToStringStyleTest {
                 .replace("<<TESTOBJECT>>", ObjectUtils.identityToString(testObject))
                 .replace("<<NESTED>>", ObjectUtils.identityToString(testObject.nested))
                 .replace("<<NOTOBFUSCATED>>", ObjectUtils.identityToString(testObject.notObfuscated));
+    }
+
+    private static String expectedArrayReflectionToStringForRecursiveStyle(TestObject[] testArray) {
+        return readResource("recursiveStyle.reflectionToString.array.expected")
+                .replace("<<TESTARRAY>>", ObjectUtils.identityToString(testArray))
+                .replace("<<TESTOBJECT>>", ObjectUtils.identityToString(testArray[0]))
+                .replace("<<NESTED>>", ObjectUtils.identityToString(testArray[0].nested))
+                .replace("<<NOTOBFUSCATED>>", ObjectUtils.identityToString(testArray[0].notObfuscated));
     }
 
     private static String expectedToStringBuilderWithObfuscateSummariesForRecursiveStyle(TestObject testObject) {
@@ -263,6 +308,7 @@ public class ObfuscatingToStringStyleTest {
         public MultiLineRecursiveStyle() {
             super(() -> configureBuilder(multiLineRecursiveStyle(c -> c != Date.class)),
                     ObfuscatingToStringStyleTest::expectedReflectionToStringForMultiLineRecursiveStyle,
+                    ObfuscatingToStringStyleTest::expectedArrayReflectionToStringForMultiLineRecursiveStyle,
                     ObfuscatingToStringStyleTest::expectedToStringBuilderWithObfuscateSummariesForMultiLineRecursiveStyle,
                     ObfuscatingToStringStyleTest::expectedToStringBuilderWithoutObfuscateSummariesForMultiLineRecursiveStyle);
         }
@@ -285,6 +331,14 @@ public class ObfuscatingToStringStyleTest {
                 .replace("<<NOTOBFUSCATED>>", ObjectUtils.identityToString(testObject.notObfuscated));
     }
 
+    private static String expectedArrayReflectionToStringForMultiLineRecursiveStyle(TestObject[] testArray) {
+        return readResource("multiLineRecursiveStyle.reflectionToString.array.expected")
+                .replace("<<TESTARRAY>>", ObjectUtils.identityToString(testArray))
+                .replace("<<TESTOBJECT>>", ObjectUtils.identityToString(testArray[0]))
+                .replace("<<NESTED>>", ObjectUtils.identityToString(testArray[0].nested))
+                .replace("<<NOTOBFUSCATED>>", ObjectUtils.identityToString(testArray[0].notObfuscated));
+    }
+
     private static String expectedToStringBuilderWithObfuscateSummariesForMultiLineRecursiveStyle(TestObject testObject) {
         return readResource("multiLineRecursiveStyle.ToStringBuilder.withObfuscateSummaries.expected")
                 .replace("<<TESTOBJECT>>", ObjectUtils.identityToString(testObject));
@@ -300,16 +354,19 @@ public class ObfuscatingToStringStyleTest {
         private Supplier<Builder> builderSupplier;
 
         private final Function<TestObject, String> expectedReflectionToString;
+        private final Function<TestObject[], String> expectedArrayReflectionToString;
         private final Function<TestObject, String> expectedToStringBuilderWithObfuscateSummaries;
         private final Function<TestObject, String> expectedToStringBuilderWithoutObfuscateSummaries;
 
         ToStringStyleTest(Supplier<Builder> builderSupplier,
                 Function<TestObject, String> expectedReflectionToString,
+                Function<TestObject[], String> expectedArrayReflectionToString,
                 Function<TestObject, String> expectedToStringBuilderWithObfuscateSummaries,
                 Function<TestObject, String> expectedToStringBuilderWithoutObfuscateSummaries) {
 
             this.builderSupplier = builderSupplier;
             this.expectedReflectionToString = expectedReflectionToString;
+            this.expectedArrayReflectionToString = expectedArrayReflectionToString;
             this.expectedToStringBuilderWithObfuscateSummaries = expectedToStringBuilderWithObfuscateSummaries;
             this.expectedToStringBuilderWithoutObfuscateSummaries = expectedToStringBuilderWithoutObfuscateSummaries;
         }
@@ -325,6 +382,20 @@ public class ObfuscatingToStringStyleTest {
 
             string = ToStringBuilder.reflectionToString(testObject, builderSupplier.get().supplier().get());
             assertEquals(expectedReflectionToString.apply(testObject).replace("\r", ""), string.replace("\r", ""));
+        }
+
+        @Test
+        @DisplayName("reflectionAppendArrayDetail")
+        public void testReflectionAppendArrayDetail() {
+            TestObject testObject = new TestObject();
+            testObject.nested = new TestObject();
+            testObject.notObfuscated = new TestObject();
+            TestObject[] testArray = { testObject };
+            String string = ToStringBuilder.reflectionToString(testArray, builderSupplier.get().build());
+            assertEquals(expectedArrayReflectionToString.apply(testArray).replace("\r", ""), string.replace("\r", ""));
+
+            string = ToStringBuilder.reflectionToString(testArray, builderSupplier.get().supplier().get());
+            assertEquals(expectedArrayReflectionToString.apply(testArray).replace("\r", ""), string.replace("\r", ""));
         }
 
         @Nested
