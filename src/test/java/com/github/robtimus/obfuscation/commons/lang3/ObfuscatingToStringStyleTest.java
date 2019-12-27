@@ -28,6 +28,10 @@ import static com.github.robtimus.obfuscation.commons.lang3.ObfuscatingToStringS
 import static com.github.robtimus.obfuscation.commons.lang3.ObfuscatingToStringStyle.shortPrefixStyle;
 import static com.github.robtimus.obfuscation.commons.lang3.ObfuscatingToStringStyle.simpleStyle;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -491,30 +495,48 @@ public class ObfuscatingToStringStyleTest {
     private static Builder configureBuilder(Builder builder) {
         Obfuscator obfuscator = fixedLength(3);
         return builder
-                .withProperty("stringValue", obfuscator)
-                .withProperty("dateValue", obfuscator)
-                .withProperty("stringList", obfuscator)
-                .withProperty("intMap", obfuscator)
-                .withProperty("longValue", obfuscator)
-                .withProperty("intValue", obfuscator)
-                .withProperty("shortValue", obfuscator)
-                .withProperty("byteValue", obfuscator)
-                .withProperty("charValue", obfuscator)
-                .withProperty("doubleValue", obfuscator)
-                .withProperty("floatValue", obfuscator)
-                .withProperty("booleanValue", obfuscator)
-                .withProperty("objectArray", obfuscator)
-                .withProperty("longArray", obfuscator)
-                .withProperty("intArray", obfuscator)
-                .withProperty("shortArray", obfuscator)
-                .withProperty("byteArray", obfuscator)
-                .withProperty("charArray", obfuscator)
-                .withProperty("doubleArray", obfuscator)
-                .withProperty("floatArray", obfuscator)
-                .withProperty("booleanArray", obfuscator)
-                .withProperty("nullValue", obfuscator)
-                .withProperty("notObfuscated", none())
+                .withField("stringValue", obfuscator)
+                .withField("dateValue", obfuscator)
+                .withField("stringList", obfuscator)
+                .withField("intMap", obfuscator)
+                .withField("longValue", obfuscator)
+                .withField("intValue", obfuscator)
+                .withField("shortValue", obfuscator)
+                .withField("byteValue", obfuscator)
+                .withField("charValue", obfuscator)
+                .withField("doubleValue", obfuscator)
+                .withField("floatValue", obfuscator)
+                .withField("booleanValue", obfuscator)
+                .withField("objectArray", obfuscator)
+                .withField("longArray", obfuscator)
+                .withField("intArray", obfuscator)
+                .withField("shortArray", obfuscator)
+                .withField("byteArray", obfuscator)
+                .withField("charArray", obfuscator)
+                .withField("doubleArray", obfuscator)
+                .withField("floatArray", obfuscator)
+                .withField("booleanArray", obfuscator)
+                .withField("nullValue", obfuscator)
+                .withField("notObfuscated", none())
                 ;
+    }
+
+    @Nested
+    @DisplayName("Builder")
+    public class BuilderTest {
+
+        @Test
+        @DisplayName("transform")
+        public void testTransform() {
+            Builder builder = defaultStyle();
+            @SuppressWarnings("unchecked")
+            Function<Builder, String> f = mock(Function.class);
+            when(f.apply(builder)).thenReturn("result");
+
+            assertEquals("result", builder.transform(f));
+            verify(f).apply(builder);
+            verifyNoMoreInteractions(f);
+        }
     }
 
     private static String readResource(String name) {
