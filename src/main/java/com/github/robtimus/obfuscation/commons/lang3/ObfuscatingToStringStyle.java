@@ -17,6 +17,7 @@
 
 package com.github.robtimus.obfuscation.commons.lang3;
 
+import static com.github.robtimus.obfuscation.ObfuscatorUtils.map;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -29,7 +30,7 @@ import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.github.robtimus.obfuscation.Obfuscator;
-import com.github.robtimus.obfuscation.StringMap;
+import com.github.robtimus.obfuscation.ObfuscatorUtils.MapBuilder;
 
 /**
  * A {@link ToStringStyle} that can obfuscate fields.
@@ -58,7 +59,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
     private static final long serialVersionUID = 1L;
 
-    private final StringMap<Obfuscator> obfuscators;
+    private final Map<String, Obfuscator> obfuscators;
     private final boolean obfuscateSummaries;
 
     private boolean isObfuscating;
@@ -73,7 +74,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
      *                               most often the value set by {@link Builder#withObfuscatedSummaries(boolean)}.
      * @throws NullPointerException If the given map of obfuscators is {@code null}.
      */
-    protected ObfuscatingToStringStyle(StringMap<Obfuscator> obfuscators, boolean obfuscateSummaries) {
+    protected ObfuscatingToStringStyle(Map<String, Obfuscator> obfuscators, boolean obfuscateSummaries) {
         this.obfuscators = Objects.requireNonNull(obfuscators);
         this.obfuscateSummaries = obfuscateSummaries;
 
@@ -389,7 +390,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
      * A factory for creating {@link ObfuscatingToStringStyle ObfuscatingToStringStyles}.
      * <p>
      * In most cases, a constructor of a sub class of {@link ObfuscatingToStringStyle} that delegates to
-     * {@link ObfuscatingToStringStyle#ObfuscatingToStringStyle(StringMap, boolean)} is used for this factory.
+     * {@link ObfuscatingToStringStyle#ObfuscatingToStringStyle(Map, boolean)} is used for this factory.
      *
      * @author Rob Spoor
      * @param <T> The type of {@link ObfuscatingToStringStyle} to create.
@@ -403,7 +404,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
          * @param obfuscateSummaries {@code true} to obfuscate summaries, or {@code false} otherwise.
          * @return A new {@link ObfuscatingToStringStyle} object.
          */
-        T create(StringMap<Obfuscator> obfuscators, boolean obfuscateSummaries);
+        T create(Map<String, Obfuscator> obfuscators, boolean obfuscateSummaries);
     }
 
     /**
@@ -420,7 +421,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
         private final Factory<?> factory;
 
-        private final StringMap.Builder<Obfuscator> obfuscators;
+        private final MapBuilder<Obfuscator> obfuscators;
 
         private boolean obfuscateSummaries = false;
 
@@ -429,7 +430,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
          * <p>
          * This builder will use a factory to build {@link Supplier Suppliers} of {@link ObfuscatingToStringStyle ObfuscatingToStringStyles} based on
          * this builder. This allows the building of {@link Supplier Suppliers} of sub classes of {@link ObfuscatingToStringStyle}; just create a
-         * constructor that delegates to {@link ObfuscatingToStringStyle#ObfuscatingToStringStyle(StringMap, boolean)}, and provide this constructor
+         * constructor that delegates to {@link ObfuscatingToStringStyle#ObfuscatingToStringStyle(Map, boolean)}, and provide this constructor
          * as factory to this constructor.
          *
          * @param factory The factory to build {@link ObfuscatingToStringStyle ObfuscatingToStringStyles} based on this builder.
@@ -438,11 +439,12 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
         public Builder(Factory<?> factory) {
             this.factory = Objects.requireNonNull(factory);
 
-            obfuscators = StringMap.builder();
+            obfuscators = map();
         }
 
         /**
          * Adds a field to obfuscate.
+         * This method is an alias for {@link #withField(String, Obfuscator, boolean) withField(fieldName, obfuscator, true)}.
          *
          * @param fieldName The name of the field. It will be treated case sensitively.
          * @param obfuscator The obfuscator to use for obfuscating the field.
@@ -497,7 +499,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
          *
          * @return A new {@code StringMap} with all added obfuscators.
          */
-        public StringMap<Obfuscator> obfuscators() {
+        public Map<String, Obfuscator> obfuscators() {
             return obfuscators.build();
         }
 
@@ -521,7 +523,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
          */
         public Supplier<ObfuscatingToStringStyle> supplier() {
             // capture the current settings
-            StringMap<Obfuscator> currentObfuscators = obfuscators();
+            Map<String, Obfuscator> currentObfuscators = obfuscators();
             boolean currentObfuscateSummaries = obfuscateSummaries;
 
             return () -> factory.create(currentObfuscators, currentObfuscateSummaries);
@@ -532,7 +534,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
         private static final long serialVersionUID = 1L;
 
-        private DefaultObfuscatingToStringStyle(StringMap<Obfuscator> obfuscators, boolean obfuscateSummaries) {
+        private DefaultObfuscatingToStringStyle(Map<String, Obfuscator> obfuscators, boolean obfuscateSummaries) {
             super(obfuscators, obfuscateSummaries);
             // no modifications
         }
@@ -542,7 +544,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
         private static final long serialVersionUID = 1L;
 
-        private MultiLineObfuscatingToStringStyle(StringMap<Obfuscator> obfuscators, boolean obfuscateSummaries) {
+        private MultiLineObfuscatingToStringStyle(Map<String, Obfuscator> obfuscators, boolean obfuscateSummaries) {
             super(obfuscators, obfuscateSummaries);
             setContentStart("["); //$NON-NLS-1$
             setFieldSeparator(System.lineSeparator() + "  "); //$NON-NLS-1$
@@ -555,7 +557,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
         private static final long serialVersionUID = 1L;
 
-        private NoFieldNamesObfuscatingToStringStyle(StringMap<Obfuscator> obfuscators, boolean obfuscateSummaries) {
+        private NoFieldNamesObfuscatingToStringStyle(Map<String, Obfuscator> obfuscators, boolean obfuscateSummaries) {
             super(obfuscators, obfuscateSummaries);
             setUseFieldNames(false);
         }
@@ -565,7 +567,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
         private static final long serialVersionUID = 1L;
 
-        private ShortPrefixObfuscatingToStringStyle(StringMap<Obfuscator> obfuscators, boolean obfuscateSummaries) {
+        private ShortPrefixObfuscatingToStringStyle(Map<String, Obfuscator> obfuscators, boolean obfuscateSummaries) {
             super(obfuscators, obfuscateSummaries);
             setUseShortClassName(true);
             setUseIdentityHashCode(false);
@@ -576,7 +578,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
         private static final long serialVersionUID = 1L;
 
-        private SimpleObfuscatingToStringStyle(StringMap<Obfuscator> obfuscators, boolean obfuscateSummaries) {
+        private SimpleObfuscatingToStringStyle(Map<String, Obfuscator> obfuscators, boolean obfuscateSummaries) {
             super(obfuscators, obfuscateSummaries);
             setUseClassName(false);
             setUseIdentityHashCode(false);
@@ -590,7 +592,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
         private static final long serialVersionUID = 1L;
 
-        private NoClassNameObfuscatingToStringStyle(StringMap<Obfuscator> obfuscators, boolean obfuscateSummaries) {
+        private NoClassNameObfuscatingToStringStyle(Map<String, Obfuscator> obfuscators, boolean obfuscateSummaries) {
             super(obfuscators, obfuscateSummaries);
             setUseClassName(false);
             setUseIdentityHashCode(false);
@@ -603,7 +605,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
         private final Predicate<? super Class<?>> recurseIntoPredicate;
 
-        RecursiveObfuscatingToStringStyle(StringMap<Obfuscator> obfuscators, boolean obfuscateSummaries,
+        RecursiveObfuscatingToStringStyle(Map<String, Obfuscator> obfuscators, boolean obfuscateSummaries,
                 Predicate<? super Class<?>> recurseIntoPredicate) {
 
             super(obfuscators, obfuscateSummaries);
@@ -637,7 +639,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
         private int currentIndent;
 
-        private MultiLineRecursiveObfuscatingToStringStyle(StringMap<Obfuscator> obfuscators, boolean obfuscateSummaries,
+        private MultiLineRecursiveObfuscatingToStringStyle(Map<String, Obfuscator> obfuscators, boolean obfuscateSummaries,
                 Predicate<? super Class<?>> recurseIntoPredicate) {
 
             super(obfuscators, obfuscateSummaries, recurseIntoPredicate);
