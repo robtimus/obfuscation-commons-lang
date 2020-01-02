@@ -65,11 +65,11 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
     private boolean isObfuscating;
 
     /**
-     * Creates a new obfuscating {@link ToStringStyle} based on the settings of a builder.
+     * Creates a new obfuscating {@link ToStringStyle}.
      *
      * @param obfuscators The obfuscators to use; most often the result of calling {@link Builder#obfuscators()}.
      *                        This map is not copied but used as-is; this allows a {@link Supplier} built by a {@link Builder} to create multiple
-     *                        {@code ObfuscatingToStringStyle} objects with the same shared map.
+     *                        obfuscating {@link ToStringStyle} objects with the same shared map.
      * @param obfuscateSummaries {@code true} to obfuscate summaries, or {@code false} otherwise;
      *                               most often the value set by {@link Builder#withObfuscatedSummaries(boolean)}.
      * @throws NullPointerException If the given map of obfuscators is {@code null}.
@@ -395,7 +395,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
      * @author Rob Spoor
      * @param <T> The type of {@link ObfuscatingToStringStyle} to create.
      */
-    interface Factory<T extends ObfuscatingToStringStyle> {
+    public interface Factory<T extends ObfuscatingToStringStyle> {
 
         /**
          * Creates a new {@link ObfuscatingToStringStyle} object.
@@ -504,9 +504,9 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
         }
 
         /**
-         * Creates a new {@code ObfuscatingToStringStyle} with the fields and obfuscators added to this builder.
+         * Creates a new obfuscating {@link ToStringStyle} with the fields and obfuscators added to this builder.
          *
-         * @return The created {@code ObfuscatingToStringStyle}.
+         * @return The created obfuscating {@link ToStringStyle}.
          */
         public ObfuscatingToStringStyle build() {
             return factory.create(obfuscators(), obfuscateSummaries);
