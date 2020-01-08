@@ -1,6 +1,6 @@
 /*
  * ObfuscatingToStringStyle.java
- * Copyright 2019 Rob Spoor
+ * Copyright 2020 Rob Spoor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 
 package com.github.robtimus.obfuscation.commons.lang3;
 
+import static com.github.robtimus.obfuscation.CaseSensitivity.CASE_SENSITIVE;
 import static com.github.robtimus.obfuscation.ObfuscatorUtils.map;
 import java.util.Collection;
 import java.util.Iterator;
@@ -29,6 +30,7 @@ import java.util.function.Supplier;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import com.github.robtimus.obfuscation.CaseSensitivity;
 import com.github.robtimus.obfuscation.Obfuscator;
 import com.github.robtimus.obfuscation.ObfuscatorUtils.MapBuilder;
 
@@ -444,15 +446,16 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
         /**
          * Adds a field to obfuscate.
-         * This method is an alias for {@link #withField(String, Obfuscator, boolean) withField(fieldName, obfuscator, true)}.
+         * This method is an alias for {@link #withField(String, Obfuscator, CaseSensitivity) withField(fieldName, obfuscator, CASE_SENSITIVE)}.
          *
          * @param fieldName The name of the field. It will be treated case sensitively.
          * @param obfuscator The obfuscator to use for obfuscating the field.
          * @return This object.
          * @throws NullPointerException If the given field name or obfuscator is {@code null}.
+         * @throws IllegalArgumentException If a field with the same name and the same case sensitivity was already added.
          */
         public Builder withField(String fieldName, Obfuscator obfuscator) {
-            return withField(fieldName, obfuscator, true);
+            return withField(fieldName, obfuscator, CASE_SENSITIVE);
         }
 
         /**
@@ -460,13 +463,13 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
          *
          * @param fieldName The name of the field.
          * @param obfuscator The obfuscator to use for obfuscating the field.
-         * @param caseSensitive {@code true} if the field name should be treated case sensitively,
-         *                          or {@code false} if it should be treated case insensitively.
+         * @param caseSensitivity The case sensitivity for the key.
          * @return This object.
-         * @throws NullPointerException If the given field name or obfuscator is {@code null}.
+         * @throws NullPointerException If the given field name, obfuscator or case sensitivity is {@code null}.
+         * @throws IllegalArgumentException If a field with the same name and the same case sensitivity was already added.
          */
-        public Builder withField(String fieldName, Obfuscator obfuscator, boolean caseSensitive) {
-            obfuscators.withEntry(fieldName, obfuscator, caseSensitive);
+        public Builder withField(String fieldName, Obfuscator obfuscator, CaseSensitivity caseSensitivity) {
+            obfuscators.withEntry(fieldName, obfuscator, caseSensitivity);
             return this;
         }
 

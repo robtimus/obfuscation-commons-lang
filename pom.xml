@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright 2019 Rob Spoor
+  Copyright 2020 Rob Spoor
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@
   <name>obfuscation-commons-lang</name>
   <description>Provides functionality for obfuscating objects using Apache Commons Lang</description>
   <url>https://robtimus.github.io/obfuscation-commons-lang/</url>
-  <inceptionYear>2019</inceptionYear>
+  <inceptionYear>2020</inceptionYear>
 
   <licenses>
     <license>
