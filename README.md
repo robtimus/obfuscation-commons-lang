@@ -41,3 +41,7 @@ The difference between using `build()` and using `supplier()` is that `supplier(
 ## Serializability
 
 Obfuscating `ToStringStyle` instances are serializable if the obfuscators they use are. This most often means that they are not serializable, even though most `ToStringStyle` implementations are.
+
+## Extending ObfuscatingToStringStyle
+
+See [examples](https://github.com/robtimus/obfuscation-commons-lang/tree/master/src/examples/java/com/github/robtimus/obfuscation/commons/lang3/extending) for some examples. These include both an example that simply reuses [ObfuscatingToStringStyle.Builder](https://robtimus.github.io/obfuscation-commons-lang/apidocs/com/github/robtimus/obfuscation/commons/lang3/ObfuscatingToStringStyle.Builder.html), and one that provides a builder with more properties.

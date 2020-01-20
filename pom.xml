@@ -79,6 +79,7 @@
 
     <version.plugin.antrun>1.8</version.plugin.antrun>
     <version.plugin.assembly>3.1.1</version.plugin.assembly>
+    <version.plugin.build-helper>3.0.0</version.plugin.build-helper>
     <version.plugin.clean>3.1.0</version.plugin.clean>
     <version.plugin.compiler>3.8.1</version.plugin.compiler>
     <version.plugin.dependency>3.1.1</version.plugin.dependency>
@@ -323,6 +324,25 @@
             <goals>
               <goal>single</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>${version.plugin.build-helper}</version>
+        <executions>
+          <execution>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>add-test-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${basedir}/src/examples/java</source>
+              </sources>
+            </configuration>
           </execution>
         </executions>
       </plugin>
