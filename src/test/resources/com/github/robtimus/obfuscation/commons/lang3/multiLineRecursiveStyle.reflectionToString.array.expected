@@ -1,293 +1,293 @@
 <<TESTARRAY>>[
   {
     <<TESTOBJECT>>[
-      stringValue=***,
-      dateValue=***,
-      stringList=***,
-      intMap=***,
-      longValue=***,
-      intValue=***,
-      shortValue=***,
-      byteValue=***,
-      charValue=***,
-      doubleValue=***,
-      floatValue=***,
-      booleanValue=***,
-      objectArray=***,
-      longArray=***,
-      intArray=***,
-      shortArray=***,
-      byteArray=***,
-      charArray=***,
-      doubleArray=***,
-      floatArray=***,
       booleanArray=***,
-      nullValue=***,
-      notMatchedStringValue=string",int,
-      notMatchedDateValue=Thu Jan 01 01:00:00 CET 1970,
-      notMatchedStringList=[
-        foo,
-        bar,
-        <null>
+      booleanValue=***,
+      byteArray=***,
+      byteValue=***,
+      charArray=***,
+      charValue=***,
+      dateValue=***,
+      doubleArray=***,
+      doubleValue=***,
+      floatArray=***,
+      floatValue=***,
+      intArray=***,
+      intMap=***,
+      intValue=***,
+      longArray=***,
+      longValue=***,
+      nested=<<NESTED>>[
+        booleanArray=***,
+        booleanValue=***,
+        byteArray=***,
+        byteValue=***,
+        charArray=***,
+        charValue=***,
+        dateValue=***,
+        doubleArray=***,
+        doubleValue=***,
+        floatArray=***,
+        floatValue=***,
+        intArray=***,
+        intMap=***,
+        intValue=***,
+        longArray=***,
+        longValue=***,
+        nested=<null>,
+        notMatchedBooleanArray={
+          true,
+          false
+        },
+        notMatchedBooleanValue=true,
+        notMatchedByteArray={
+          7,
+          8
+        },
+        notMatchedByteValue=4,
+        notMatchedCharArray={
+          B,
+          C
+        },
+        notMatchedCharValue=A,
+        notMatchedDateValue=Thu Jan 01 01:00:00 CET 1970,
+        notMatchedDoubleArray={
+          3.141592653589793,
+          2.718281828459045
+        },
+        notMatchedDoubleValue=3.141592653589793,
+        notMatchedFloatArray={
+          1.5707964,
+          1.3591409
+        },
+        notMatchedFloatValue=2.7182817,
+        notMatchedIntArray={
+          3,
+          4
+        },
+        notMatchedIntMap={
+          foo=13,
+          bar=14,
+          <null>=<null>
+        },
+        notMatchedIntValue=2,
+        notMatchedLongArray={
+          1,
+          2
+        },
+        notMatchedLongValue=1,
+        notMatchedNullValue=<null>,
+        notMatchedObjectArray={
+          1,
+          foo,
+          <null>
+        },
+        notMatchedShortArray={
+          5,
+          6
+        },
+        notMatchedShortValue=3,
+        notMatchedStringList=[
+          foo,
+          bar,
+          <null>
+        ],
+        notMatchedStringValue=string",int,
+        notObfuscated=<null>,
+        nullValue=***,
+        objectArray=***,
+        self=<<NESTED>>,
+        shortArray=***,
+        shortValue=***,
+        stringList=***,
+        stringValue=***
       ],
+      notMatchedBooleanArray={
+        true,
+        false
+      },
+      notMatchedBooleanValue=true,
+      notMatchedByteArray={
+        7,
+        8
+      },
+      notMatchedByteValue=4,
+      notMatchedCharArray={
+        B,
+        C
+      },
+      notMatchedCharValue=A,
+      notMatchedDateValue=Thu Jan 01 01:00:00 CET 1970,
+      notMatchedDoubleArray={
+        3.141592653589793,
+        2.718281828459045
+      },
+      notMatchedDoubleValue=3.141592653589793,
+      notMatchedFloatArray={
+        1.5707964,
+        1.3591409
+      },
+      notMatchedFloatValue=2.7182817,
+      notMatchedIntArray={
+        3,
+        4
+      },
       notMatchedIntMap={
         foo=13,
         bar=14,
         <null>=<null>
       },
-      notMatchedLongValue=1,
       notMatchedIntValue=2,
-      notMatchedShortValue=3,
-      notMatchedByteValue=4,
-      notMatchedCharValue=A,
-      notMatchedDoubleValue=3.141592653589793,
-      notMatchedFloatValue=2.7182817,
-      notMatchedBooleanValue=true,
+      notMatchedLongArray={
+        1,
+        2
+      },
+      notMatchedLongValue=1,
+      notMatchedNullValue=<null>,
       notMatchedObjectArray={
         1,
         foo,
         <null>
       },
-      notMatchedLongArray={
-        1,
-        2
-      },
-      notMatchedIntArray={
-        3,
-        4
-      },
       notMatchedShortArray={
         5,
         6
       },
-      notMatchedByteArray={
-        7,
-        8
-      },
-      notMatchedCharArray={
-        B,
-        C
-      },
-      notMatchedDoubleArray={
-        3.141592653589793,
-        2.718281828459045
-      },
-      notMatchedFloatArray={
-        1.5707964,
-        1.3591409
-      },
-      notMatchedBooleanArray={
-        true,
-        false
-      },
-      notMatchedNullValue=<null>,
-      nested=<<NESTED>>[
-        stringValue=***,
-        dateValue=***,
-        stringList=***,
-        intMap=***,
-        longValue=***,
-        intValue=***,
-        shortValue=***,
-        byteValue=***,
-        charValue=***,
-        doubleValue=***,
-        floatValue=***,
-        booleanValue=***,
-        objectArray=***,
-        longArray=***,
-        intArray=***,
-        shortArray=***,
-        byteArray=***,
-        charArray=***,
-        doubleArray=***,
-        floatArray=***,
-        booleanArray=***,
-        nullValue=***,
-        notMatchedStringValue=string",int,
-        notMatchedDateValue=Thu Jan 01 01:00:00 CET 1970,
-        notMatchedStringList=[
-          foo,
-          bar,
-          <null>
-        ],
-        notMatchedIntMap={
-          foo=13,
-          bar=14,
-          <null>=<null>
-        },
-        notMatchedLongValue=1,
-        notMatchedIntValue=2,
-        notMatchedShortValue=3,
-        notMatchedByteValue=4,
-        notMatchedCharValue=A,
-        notMatchedDoubleValue=3.141592653589793,
-        notMatchedFloatValue=2.7182817,
-        notMatchedBooleanValue=true,
-        notMatchedObjectArray={
-          1,
-          foo,
-          <null>
-        },
-        notMatchedLongArray={
-          1,
-          2
-        },
-        notMatchedIntArray={
-          3,
-          4
-        },
-        notMatchedShortArray={
-          5,
-          6
-        },
-        notMatchedByteArray={
-          7,
-          8
-        },
-        notMatchedCharArray={
-          B,
-          C
-        },
-        notMatchedDoubleArray={
-          3.141592653589793,
-          2.718281828459045
-        },
-        notMatchedFloatArray={
-          1.5707964,
-          1.3591409
-        },
-        notMatchedBooleanArray={
+      notMatchedShortValue=3,
+      notMatchedStringList=[
+        foo,
+        bar,
+        <null>
+      ],
+      notMatchedStringValue=string",int,
+      notObfuscated=<<NOTOBFUSCATED>>[
+        booleanArray={
           true,
           false
         },
-        notMatchedNullValue=<null>,
-        nested=<null>,
-        notObfuscated=<null>,
-        self=<<NESTED>>
-      ],
-      notObfuscated=<<NOTOBFUSCATED>>[
-        stringValue=string",int,
+        booleanValue=true,
+        byteArray={
+          7,
+          8
+        },
+        byteValue=4,
+        charArray={
+          B,
+          C
+        },
+        charValue=A,
         dateValue=Thu Jan 01 01:00:00 CET 1970,
-        stringList=[
-          foo,
-          bar,
-          <null>
-        ],
+        doubleArray={
+          3.141592653589793,
+          2.718281828459045
+        },
+        doubleValue=3.141592653589793,
+        floatArray={
+          1.5707964,
+          1.3591409
+        },
+        floatValue=2.7182817,
+        intArray={
+          3,
+          4
+        },
         intMap={
           foo=13,
           bar=14,
           <null>=<null>
         },
-        longValue=1,
         intValue=2,
-        shortValue=3,
-        byteValue=4,
-        charValue=A,
-        doubleValue=3.141592653589793,
-        floatValue=2.7182817,
-        booleanValue=true,
-        objectArray={
-          1,
-          foo,
-          <null>
-        },
         longArray={
           1,
           2
         },
-        intArray={
-          3,
-          4
-        },
-        shortArray={
-          5,
-          6
-        },
-        byteArray={
-          7,
-          8
-        },
-        charArray={
-          B,
-          C
-        },
-        doubleArray={
-          3.141592653589793,
-          2.718281828459045
-        },
-        floatArray={
-          1.5707964,
-          1.3591409
-        },
-        booleanArray={
+        longValue=1,
+        nested=<null>,
+        notMatchedBooleanArray={
           true,
           false
         },
-        nullValue=<null>,
-        notMatchedStringValue=string",int,
+        notMatchedBooleanValue=true,
+        notMatchedByteArray={
+          7,
+          8
+        },
+        notMatchedByteValue=4,
+        notMatchedCharArray={
+          B,
+          C
+        },
+        notMatchedCharValue=A,
         notMatchedDateValue=Thu Jan 01 01:00:00 CET 1970,
-        notMatchedStringList=[
-          foo,
-          bar,
-          <null>
-        ],
+        notMatchedDoubleArray={
+          3.141592653589793,
+          2.718281828459045
+        },
+        notMatchedDoubleValue=3.141592653589793,
+        notMatchedFloatArray={
+          1.5707964,
+          1.3591409
+        },
+        notMatchedFloatValue=2.7182817,
+        notMatchedIntArray={
+          3,
+          4
+        },
         notMatchedIntMap={
           foo=13,
           bar=14,
           <null>=<null>
         },
-        notMatchedLongValue=1,
         notMatchedIntValue=2,
-        notMatchedShortValue=3,
-        notMatchedByteValue=4,
-        notMatchedCharValue=A,
-        notMatchedDoubleValue=3.141592653589793,
-        notMatchedFloatValue=2.7182817,
-        notMatchedBooleanValue=true,
+        notMatchedLongArray={
+          1,
+          2
+        },
+        notMatchedLongValue=1,
+        notMatchedNullValue=<null>,
         notMatchedObjectArray={
           1,
           foo,
           <null>
         },
-        notMatchedLongArray={
-          1,
-          2
-        },
-        notMatchedIntArray={
-          3,
-          4
-        },
         notMatchedShortArray={
           5,
           6
         },
-        notMatchedByteArray={
-          7,
-          8
-        },
-        notMatchedCharArray={
-          B,
-          C
-        },
-        notMatchedDoubleArray={
-          3.141592653589793,
-          2.718281828459045
-        },
-        notMatchedFloatArray={
-          1.5707964,
-          1.3591409
-        },
-        notMatchedBooleanArray={
-          true,
-          false
-        },
-        notMatchedNullValue=<null>,
-        nested=<null>,
+        notMatchedShortValue=3,
+        notMatchedStringList=[
+          foo,
+          bar,
+          <null>
+        ],
+        notMatchedStringValue=string",int,
         notObfuscated=<null>,
-        self=<<NOTOBFUSCATED>>
+        nullValue=<null>,
+        objectArray={
+          1,
+          foo,
+          <null>
+        },
+        self=<<NOTOBFUSCATED>>,
+        shortArray={
+          5,
+          6
+        },
+        shortValue=3,
+        stringList=[
+          foo,
+          bar,
+          <null>
+        ],
+        stringValue=string",int
       ],
-      self=<<TESTOBJECT>>
+      nullValue=***,
+      objectArray=***,
+      self=<<TESTOBJECT>>,
+      shortArray=***,
+      shortValue=***,
+      stringList=***,
+      stringValue=***
     ]
   }
 ]
