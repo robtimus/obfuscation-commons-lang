@@ -20,10 +20,10 @@ package com.github.robtimus.obfuscation.commons.lang3.extending;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import com.github.robtimus.obfuscation.CaseSensitivity;
 import com.github.robtimus.obfuscation.Obfuscator;
 import com.github.robtimus.obfuscation.commons.lang3.ObfuscatingToStringStyle;
 import com.github.robtimus.obfuscation.commons.lang3.extending.CustomBuilderToStringStyle.Builder.Snapshot;
+import com.github.robtimus.obfuscation.support.CaseSensitivity;
 
 /*
  * A sub class of ObfuscatingToStringStyle that uses a custom builder. This builder will use an ObfuscatingToStringStyle.Builder Builder as delegate.

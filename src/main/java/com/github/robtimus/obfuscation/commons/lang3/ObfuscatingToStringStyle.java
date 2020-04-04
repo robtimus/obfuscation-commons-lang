@@ -17,8 +17,8 @@
 
 package com.github.robtimus.obfuscation.commons.lang3;
 
-import static com.github.robtimus.obfuscation.CaseSensitivity.CASE_SENSITIVE;
-import static com.github.robtimus.obfuscation.ObfuscatorUtils.map;
+import static com.github.robtimus.obfuscation.support.CaseSensitivity.CASE_SENSITIVE;
+import static com.github.robtimus.obfuscation.support.ObfuscatorUtils.map;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -30,10 +30,10 @@ import java.util.function.Supplier;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import com.github.robtimus.obfuscation.CaseSensitivity;
 import com.github.robtimus.obfuscation.Obfuscator;
-import com.github.robtimus.obfuscation.ObfuscatorUtils.MapBuilder;
 import com.github.robtimus.obfuscation.commons.lang3.ObfuscatingToStringStyle.Builder.Snapshot;
+import com.github.robtimus.obfuscation.support.CaseSensitivity;
+import com.github.robtimus.obfuscation.support.ObfuscatorUtils.MapBuilder;
 
 /**
  * A {@link ToStringStyle} that can obfuscate fields.
