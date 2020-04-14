@@ -569,7 +569,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
             private final Map<String, Obfuscator> obfuscators;
 
-            private boolean obfuscateSummaries = false;
+            private final boolean obfuscateSummaries;
 
             private Snapshot(Builder builder) {
                 obfuscators = builder.obfuscators();
@@ -588,7 +588,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
             /**
              * Returns whether or not to obfuscate summaries as well as details.
              *
-             * @return {@code true} to obfuscate summaries and details, or {@code false} to only obfusate details.
+             * @return {@code true} to obfuscate summaries and details, or {@code false} to only obfuscate details.
              */
             public boolean obfuscateSummaries() {
                 return obfuscateSummaries;
