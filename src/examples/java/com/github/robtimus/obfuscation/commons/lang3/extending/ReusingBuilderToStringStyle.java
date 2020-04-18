@@ -43,6 +43,6 @@ public final class ReusingBuilderToStringStyle extends ObfuscatingToStringStyle 
     }
 
     public static Builder builder() {
-        return new Builder(ReusingBuilderToStringStyle::new, ReusingBuilderToStringStyle::new);
+        return Builder.create(ReusingBuilderToStringStyle::new, ReusingBuilderToStringStyle::new);
     }
 }

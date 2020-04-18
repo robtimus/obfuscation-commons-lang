@@ -21,12 +21,9 @@ import static com.github.robtimus.obfuscation.Obfuscator.fixedLength;
 import static com.github.robtimus.obfuscation.Obfuscator.none;
 import static com.github.robtimus.obfuscation.commons.lang3.ObfuscatingToStringStyle.defaultStyle;
 import static com.github.robtimus.obfuscation.commons.lang3.ObfuscatingToStringStyle.multiLineRecursiveStyle;
-import static com.github.robtimus.obfuscation.commons.lang3.ObfuscatingToStringStyle.multiLineStyle;
-import static com.github.robtimus.obfuscation.commons.lang3.ObfuscatingToStringStyle.noClassNameStyle;
-import static com.github.robtimus.obfuscation.commons.lang3.ObfuscatingToStringStyle.noFieldNamesStyle;
 import static com.github.robtimus.obfuscation.commons.lang3.ObfuscatingToStringStyle.recursiveStyle;
-import static com.github.robtimus.obfuscation.commons.lang3.ObfuscatingToStringStyle.shortPrefixStyle;
-import static com.github.robtimus.obfuscation.commons.lang3.ObfuscatingToStringStyle.simpleStyle;
+import static com.github.robtimus.obfuscation.support.CaseSensitivity.CASE_INSENSITIVE;
+import static com.github.robtimus.obfuscation.support.CaseSensitivity.CASE_SENSITIVE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -60,7 +57,7 @@ public class ObfuscatingToStringStyleTest {
     public class DefaultStyle extends ToStringStyleTest {
 
         public DefaultStyle() {
-            super(() -> configureBuilder(defaultStyle()),
+            super(ObfuscatingToStringStyle::defaultStyle,
                     ObfuscatingToStringStyleTest::expectedReflectionToStringForDefaultStyle,
                     ObfuscatingToStringStyleTest::expectedArrayReflectionToStringForDefaultStyle,
                     ObfuscatingToStringStyleTest::expectedToStringBuilderWithObfuscateSummariesForDefaultStyle,
@@ -93,7 +90,7 @@ public class ObfuscatingToStringStyleTest {
     public class MultiLineStyle extends ToStringStyleTest {
 
         public MultiLineStyle() {
-            super(() -> configureBuilder(multiLineStyle()),
+            super(ObfuscatingToStringStyle::multiLineStyle,
                     ObfuscatingToStringStyleTest::expectedReflectionToStringForMultiLineStyle,
                     ObfuscatingToStringStyleTest::expectedArrayReflectionToStringForMultiLineStyle,
                     ObfuscatingToStringStyleTest::expectedToStringBuilderWithObfuscateSummariesForMultiLineStyle,
@@ -136,7 +133,7 @@ public class ObfuscatingToStringStyleTest {
     public class NoFieldNamesStyle extends ToStringStyleTest {
 
         public NoFieldNamesStyle() {
-            super(() -> configureBuilder(noFieldNamesStyle()),
+            super(ObfuscatingToStringStyle::noFieldNamesStyle,
                     ObfuscatingToStringStyleTest::expectedReflectionToStringForNoFieldNamesStyle,
                     ObfuscatingToStringStyleTest::expectedArrayReflectionToStringForNoFieldNamesStyle,
                     ObfuscatingToStringStyleTest::expectedToStringBuilderWithSummarForNoFieldNamesStyle,
@@ -169,7 +166,7 @@ public class ObfuscatingToStringStyleTest {
     public class ShortPrefixStyle extends ToStringStyleTest {
 
         public ShortPrefixStyle() {
-            super(() -> configureBuilder(shortPrefixStyle()),
+            super(ObfuscatingToStringStyle::shortPrefixStyle,
                     ObfuscatingToStringStyleTest::expectedReflectionToStringForShortPrefixStyle,
                     ObfuscatingToStringStyleTest::expectedArrayReflectionToStringForShortPrefixStyle,
                     o -> expectedToStringBuilderWithObfuscateSummariesForShortPrefixStyle(),
@@ -200,7 +197,7 @@ public class ObfuscatingToStringStyleTest {
     public class SimpleStyle extends ToStringStyleTest {
 
         public SimpleStyle() {
-            super(() -> configureBuilder(simpleStyle()),
+            super(ObfuscatingToStringStyle::simpleStyle,
                     ObfuscatingToStringStyleTest::expectedReflectionToStringForSimpleStyle,
                     ObfuscatingToStringStyleTest::expectedArrayReflectionToStringForSimpleStyle,
                     o -> expectedToStringBuilderWithObfuscateSummariesForSimpleStyle(),
@@ -241,7 +238,7 @@ public class ObfuscatingToStringStyleTest {
     public class NoClassNameStyle extends ToStringStyleTest {
 
         public NoClassNameStyle() {
-            super(() -> configureBuilder(noClassNameStyle()),
+            super(ObfuscatingToStringStyle::noClassNameStyle,
                     ObfuscatingToStringStyleTest::expectedReflectionToStringForNoClassNameStyle,
                     ObfuscatingToStringStyleTest::expectedArrayReflectionToStringForNoClassNameStyle,
                     o -> expectedToStringBuilderWithObfuscateSummariesForNoClassNameStyle(),
@@ -272,7 +269,7 @@ public class ObfuscatingToStringStyleTest {
     public class RecursiveStyle extends ToStringStyleTest {
 
         public RecursiveStyle() {
-            super(() -> configureBuilder(recursiveStyle(c -> c != Date.class)),
+            super(() -> recursiveStyle(c -> c != Date.class),
                     ObfuscatingToStringStyleTest::expectedReflectionToStringForRecursiveStyle,
                     ObfuscatingToStringStyleTest::expectedArrayReflectionToStringForRecursiveStyle,
                     ObfuscatingToStringStyleTest::expectedToStringBuilderWithObfuscateSummariesForRecursiveStyle,
@@ -310,7 +307,7 @@ public class ObfuscatingToStringStyleTest {
     public class MultiLineRecursiveStyle extends ToStringStyleTest {
 
         public MultiLineRecursiveStyle() {
-            super(() -> configureBuilder(multiLineRecursiveStyle(c -> c != Date.class)),
+            super(() -> multiLineRecursiveStyle(c -> c != Date.class),
                     ObfuscatingToStringStyleTest::expectedReflectionToStringForMultiLineRecursiveStyle,
                     ObfuscatingToStringStyleTest::expectedArrayReflectionToStringForMultiLineRecursiveStyle,
                     ObfuscatingToStringStyleTest::expectedToStringBuilderWithObfuscateSummariesForMultiLineRecursiveStyle,
@@ -381,10 +378,10 @@ public class ObfuscatingToStringStyleTest {
             TestObject testObject = new TestObject();
             testObject.nested = new TestObject();
             testObject.notObfuscated = new TestObject();
-            String string = ToStringBuilder.reflectionToString(testObject, builderSupplier.get().build());
+            String string = ToStringBuilder.reflectionToString(testObject, configureBuilder(builderSupplier.get()).build());
             assertEquals(expectedReflectionToString.apply(testObject).replace("\r", ""), string.replace("\r", ""));
 
-            string = ToStringBuilder.reflectionToString(testObject, builderSupplier.get().supplier().get());
+            string = ToStringBuilder.reflectionToString(testObject, configureBuilder(builderSupplier.get()).supplier().get());
             assertEquals(expectedReflectionToString.apply(testObject).replace("\r", ""), string.replace("\r", ""));
         }
 
@@ -395,10 +392,10 @@ public class ObfuscatingToStringStyleTest {
             testObject.nested = new TestObject();
             testObject.notObfuscated = new TestObject();
             TestObject[] testArray = { testObject };
-            String string = ToStringBuilder.reflectionToString(testArray, builderSupplier.get().build());
+            String string = ToStringBuilder.reflectionToString(testArray, configureBuilder(builderSupplier.get()).build());
             assertEquals(expectedArrayReflectionToString.apply(testArray).replace("\r", ""), string.replace("\r", ""));
 
-            string = ToStringBuilder.reflectionToString(testArray, builderSupplier.get().supplier().get());
+            string = ToStringBuilder.reflectionToString(testArray, configureBuilder(builderSupplier.get()).supplier().get());
             assertEquals(expectedArrayReflectionToString.apply(testArray).replace("\r", ""), string.replace("\r", ""));
         }
 
@@ -424,8 +421,12 @@ public class ObfuscatingToStringStyleTest {
                 assertEquals(expectedToStringBuilderWithoutObfuscateSummaries.apply(testObject).replace("\r", ""), string.replace("\r", ""));
             }
 
-            private String createTestString(TestObject testObject, boolean withObfuscateSummaries) {
-                return new ToStringBuilder(testObject, builderSupplier.get().withObfuscatedSummaries(withObfuscateSummaries).build())
+            private String createTestString(TestObject testObject, boolean obfuscateSummaries) {
+                Builder builder = builderSupplier.get();
+                builder = obfuscateSummaries ? builder.includeSummariesByDefault() : builder.excludeSummariesByDefault();
+                builder = configureBuilder(builder);
+
+                return new ToStringBuilder(testObject, builder.build())
                         .append(testObject.booleanValue)
                         .append(testObject.booleanArray)
                         .append(testObject.byteValue)
@@ -536,6 +537,106 @@ public class ObfuscatingToStringStyleTest {
             assertEquals("result", builder.transform(f));
             verify(f).apply(builder);
             verifyNoMoreInteractions(f);
+        }
+
+        @Nested
+        @DisplayName("case sensitivity")
+        public class CaseSensitivity {
+
+            @Test
+            @DisplayName("caseSensitiveByDefault and overridden")
+            public void testCaseSensitiveByDefaultAndOverridden() {
+                ObfuscatingToStringStyle toStringStyle = defaultStyle()
+                        .caseSensitiveByDefault()
+                        .withField("caseSensitive", fixedLength(3))
+                        .withField("caseInsensitive", fixedLength(3), CASE_INSENSITIVE)
+                        .build();
+
+                StringBuffer buffer = new StringBuffer();
+                toStringStyle.append(buffer, "caseSensitive", "value", true);
+                assertEquals("caseSensitive=***,", buffer.toString());
+
+                buffer.delete(0, buffer.length());
+                toStringStyle.append(buffer, "CASESENSITIVE", "value", true);
+                assertEquals("CASESENSITIVE=value,", buffer.toString());
+
+                buffer.delete(0, buffer.length());
+                toStringStyle.append(buffer, "caseInsensitive", "value", true);
+                assertEquals("caseInsensitive=***,", buffer.toString());
+
+                buffer.delete(0, buffer.length());
+                toStringStyle.append(buffer, "CASEINSENSITIVE", "value", true);
+                assertEquals("CASEINSENSITIVE=***,", buffer.toString());
+            }
+
+            @Test
+            @DisplayName("caseInsensitiveByDefault and overridden")
+            public void testCaseInsensitiveByDefaultAndOverridden() {
+                ObfuscatingToStringStyle toStringStyle = defaultStyle()
+                        .caseInsensitiveByDefault()
+                        .withField("caseInsensitive", fixedLength(3))
+                        .withField("caseSensitive", fixedLength(3), CASE_SENSITIVE)
+                        .build();
+
+                StringBuffer buffer = new StringBuffer();
+                toStringStyle.append(buffer, "caseInsensitive", "value", true);
+                assertEquals("caseInsensitive=***,", buffer.toString());
+
+                buffer.delete(0, buffer.length());
+                toStringStyle.append(buffer, "CASEINSENSITIVE", "value", true);
+                assertEquals("CASEINSENSITIVE=***,", buffer.toString());
+
+                buffer.delete(0, buffer.length());
+                toStringStyle.append(buffer, "caseSensitive", "value", true);
+                assertEquals("caseSensitive=***,", buffer.toString());
+
+                buffer.delete(0, buffer.length());
+                toStringStyle.append(buffer, "CASESENSITIVE", "value", true);
+                assertEquals("CASESENSITIVE=value,", buffer.toString());
+            }
+        }
+
+        @Nested
+        @DisplayName("summaries")
+        public class Summaries {
+
+            @Test
+            @DisplayName("excludeByDefault and overridden")
+            public void testExcludedByDefaultAndOverridden() {
+                ObfuscatingToStringStyle toStringStyle = defaultStyle()
+                        .excludeSummariesByDefault()
+                        .withField("excluded", fixedLength(3))
+                        .withField("included", fixedLength(3))
+                                .includeSummaries()
+                        .build();
+
+                StringBuffer buffer = new StringBuffer();
+                toStringStyle.append(buffer, "excluded", "value", false);
+                assertEquals("excluded=<String>,", buffer.toString());
+
+                buffer.delete(0, buffer.length());
+                toStringStyle.append(buffer, "included", "value", true);
+                assertEquals("included=***,", buffer.toString());
+            }
+
+            @Test
+            @DisplayName("includedByDefault and overridden")
+            public void testIncludedByDefaultAndOverridden() {
+                ObfuscatingToStringStyle toStringStyle = defaultStyle()
+                        .includeSummariesByDefault()
+                        .withField("included", fixedLength(3))
+                        .withField("excluded", fixedLength(3))
+                                .excludeSummaries()
+                        .build();
+
+                StringBuffer buffer = new StringBuffer();
+                toStringStyle.append(buffer, "included", "value", true);
+                assertEquals("included=***,", buffer.toString());
+
+                buffer.delete(0, buffer.length());
+                toStringStyle.append(buffer, "excluded", "value", false);
+                assertEquals("excluded=<String>,", buffer.toString());
+            }
         }
     }
 

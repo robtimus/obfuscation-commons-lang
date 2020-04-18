@@ -17,7 +17,6 @@
 
 package com.github.robtimus.obfuscation.commons.lang3.extending;
 
-import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import com.github.robtimus.obfuscation.Obfuscator;
@@ -33,7 +32,7 @@ public final class CustomBuilderToStringStyle extends ObfuscatingToStringStyle {
 
     private static final long serialVersionUID = 1L;
 
-    private CustomBuilderToStringStyle(Builder builder) {
+    private CustomBuilderToStringStyle(ToStringStyleBuilder builder) {
         super(builder.delegate);
         setUseFieldNames(builder.useFieldNames);
         setUseClassName(builder.useClassName);
@@ -46,58 +45,41 @@ public final class CustomBuilderToStringStyle extends ObfuscatingToStringStyle {
     }
 
     public static Builder builder() {
-        return new Builder();
+        return new ToStringStyleBuilder();
     }
 
-    public static final class Builder {
-
-        private final ObfuscatingToStringStyle.Builder delegate;
-
-        // two fields copied from ToStringStyle
-        private boolean useFieldNames;
-        private boolean useClassName;
+    public abstract static class Builder {
 
         private Builder() {
-            // the two factories will not be used, so provide bogus methods
-            delegate = new ObfuscatingToStringStyle.Builder(b -> null, s -> null);
-            useFieldNames = true;
-            useClassName = true;
         }
 
-        public Builder withField(String fieldName, Obfuscator obfuscator) {
-            delegate.withField(fieldName, obfuscator);
-            return this;
-        }
+        public abstract FieldConfigurer withField(String fieldName, Obfuscator obfuscator);
 
-        public Builder withField(String fieldName, Obfuscator obfuscator, CaseSensitivity caseSensitivity) {
-            delegate.withField(fieldName, obfuscator, caseSensitivity);
-            return this;
-        }
+        public abstract FieldConfigurer withField(String fieldName, Obfuscator obfuscator, CaseSensitivity caseSensitivity);
 
-        public Builder withObfuscatedSummaries(boolean obfuscateSummaries) {
-            delegate.withObfuscatedSummaries(obfuscateSummaries);
-            return this;
-        }
+        public abstract Builder caseSensitiveByDefault();
+
+        public abstract Builder caseInsensitiveByDefault();
+
+        public abstract Builder includeSummariesByDefault();
+
+        public abstract Builder excludeSummariesByDefault();
+
+        public abstract Builder useFieldNames(boolean useFieldNames);
+
+        public abstract Builder useClassName(boolean useClassName);
 
         public <R> R transform(Function<? super Builder, ? extends R> f) {
             return f.apply(this);
         }
 
-        public Map<String, Obfuscator> obfuscators() {
-            return delegate.obfuscators();
-        }
+        public abstract Snapshot snapshot();
 
-        public Snapshot snapshot() {
-            return new Snapshot(this);
-        }
-
-        public ObfuscatingToStringStyle build() {
-            return new CustomBuilderToStringStyle(this);
-        }
+        public abstract ObfuscatingToStringStyle build();
 
         public Supplier<ObfuscatingToStringStyle> supplier() {
             Snapshot snapshot = snapshot();
-            return () -> new CustomBuilderToStringStyle(snapshot);
+            return snapshot::build;
         }
 
         public static final class Snapshot {
@@ -107,27 +89,119 @@ public final class CustomBuilderToStringStyle extends ObfuscatingToStringStyle {
             private final boolean useFieldNames;
             private final boolean useClassName;
 
-            private Snapshot(Builder builder) {
+            private Snapshot(ToStringStyleBuilder builder) {
                 delegate = builder.delegate.snapshot();
                 useFieldNames = builder.useFieldNames;
                 useClassName = builder.useClassName;
             }
 
-            public Map<String, Obfuscator> obfuscators() {
-                return delegate.obfuscators();
+            public ObfuscatingToStringStyle build() {
+                return new CustomBuilderToStringStyle(this);
             }
+        }
+    }
 
-            public boolean obfuscateSummaries() {
-                return delegate.obfuscateSummaries();
-            }
+    public abstract static class FieldConfigurer extends Builder {
 
-            public boolean useFieldNames() {
-                return useFieldNames;
-            }
+        private FieldConfigurer() {
+            super();
+        }
 
-            public boolean useClassNames() {
-                return useClassName;
-            }
+        public abstract FieldConfigurer includeSummaries();
+
+        public abstract FieldConfigurer excludeSummaries();
+    }
+
+    public static final class ToStringStyleBuilder extends FieldConfigurer {
+
+        private final ObfuscatingToStringStyle.Builder delegate;
+
+        private ObfuscatingToStringStyle.FieldConfigurer fieldDelegate;
+
+        // two fields copied from ToStringStyle
+        private boolean useFieldNames;
+        private boolean useClassName;
+
+        private ToStringStyleBuilder() {
+            // the two factories will not be used, so provide bogus methods
+            delegate = ObfuscatingToStringStyle.Builder.create(b -> null, s -> null);
+            useFieldNames = true;
+            useClassName = true;
+        }
+
+        @Override
+        public FieldConfigurer withField(String fieldName, Obfuscator obfuscator) {
+            fieldDelegate = delegate.withField(fieldName, obfuscator);
+            return this;
+        }
+
+        @Override
+        public FieldConfigurer withField(String fieldName, Obfuscator obfuscator, CaseSensitivity caseSensitivity) {
+            fieldDelegate = delegate.withField(fieldName, obfuscator, caseSensitivity);
+            return this;
+        }
+
+        @Override
+        public Builder caseSensitiveByDefault() {
+            delegate.caseSensitiveByDefault();
+            return this;
+        }
+
+        @Override
+        public Builder caseInsensitiveByDefault() {
+            delegate.caseInsensitiveByDefault();
+            return this;
+        }
+
+        @Override
+        public Builder includeSummariesByDefault() {
+            delegate.includeSummariesByDefault();
+            return this;
+        }
+
+        @Override
+        public Builder excludeSummariesByDefault() {
+            delegate.excludeSummariesByDefault();
+            return this;
+        }
+
+        @Override
+        public FieldConfigurer includeSummaries() {
+            fieldDelegate.includeSummaries();
+            return this;
+        }
+
+        @Override
+        public FieldConfigurer excludeSummaries() {
+            fieldDelegate.excludeSummaries();
+            return this;
+        }
+
+        @Override
+        public Builder useFieldNames(boolean useFieldNames) {
+            this.useFieldNames = useFieldNames;
+            return this;
+        }
+
+        @Override
+        public Builder useClassName(boolean useClassName) {
+            this.useClassName = useClassName;
+            return this;
+        }
+
+        @Override
+        public <R> R transform(Function<? super Builder, ? extends R> f) {
+            return f.apply(this);
+        }
+
+        @Override
+        public Snapshot snapshot() {
+            return new Snapshot(this);
+        }
+
+        @Override
+        public ObfuscatingToStringStyle build() {
+            return new CustomBuilderToStringStyle(this);
         }
     }
 }

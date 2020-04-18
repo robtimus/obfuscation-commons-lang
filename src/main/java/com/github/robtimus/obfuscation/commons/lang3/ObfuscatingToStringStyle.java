@@ -17,7 +17,6 @@
 
 package com.github.robtimus.obfuscation.commons.lang3;
 
-import static com.github.robtimus.obfuscation.support.CaseSensitivity.CASE_SENSITIVE;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -53,7 +52,7 @@ import com.github.robtimus.obfuscation.support.MapBuilder;
  * }
  * </code></pre>
  * <p>
- * Note: instances of {@code ObfuscatingToStringStyle} are usually <b>not</b> serializable, because obfuscators (in general) aren't.
+ * Note: instances of {@code ObfuscatingToStringStyle} are <b>not</b> serializable.
  *
  * @author Rob Spoor
  */
@@ -61,8 +60,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
     private static final long serialVersionUID = 1L;
 
-    private final Map<String, Obfuscator> obfuscators;
-    private final boolean obfuscateSummaries;
+    private final Map<String, FieldConfig> fields;
 
     private boolean isObfuscating;
 
@@ -73,8 +71,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
      * @throws NullPointerException If the given builder is {@code null}.
      */
     protected ObfuscatingToStringStyle(Builder builder) {
-        obfuscators = builder.obfuscators();
-        obfuscateSummaries = builder.obfuscateSummaries;
+        fields = builder.fields();
 
         isObfuscating = false;
     }
@@ -86,23 +83,22 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
      * @throws NullPointerException If the given snapshot is {@code null}.
      */
     protected ObfuscatingToStringStyle(Snapshot snapshot) {
-        obfuscators = snapshot.obfuscators;
-        obfuscateSummaries = snapshot.obfuscateSummaries;
+        fields = snapshot.fields();
 
         isObfuscating = false;
     }
 
     final void doAppend(StringBuffer buffer, String fieldName, Consumer<StringBuffer> append) {
         if (!isObfuscating) {
-            Obfuscator obfuscator = fieldName == null ? null : obfuscators.get(fieldName);
-            if (obfuscator != null) {
+            FieldConfig fieldConfig = fields.get(fieldName);
+            if (fieldConfig != null) {
                 isObfuscating = true;
                 int start = buffer.length();
                 int end = start;
                 try {
                     append.accept(buffer);
                     end = buffer.length();
-                    obfuscator.obfuscateText(buffer, start, end, buffer);
+                    fieldConfig.obfuscator.obfuscateText(buffer, start, end, buffer);
                 } finally {
                     buffer.delete(start, end);
                     isObfuscating = false;
@@ -121,7 +117,8 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
     @Override
     protected void appendSummary(StringBuffer buffer, String fieldName, Object value) {
-        if (obfuscateSummaries) {
+        FieldConfig fieldConfig = fields.get(fieldName);
+        if (fieldConfig != null && fieldConfig.obfuscateSummaries) {
             doAppend(buffer, fieldName, b -> super.appendSummary(b, fieldName, value));
         } else {
             super.appendSummary(buffer, fieldName, value);
@@ -278,7 +275,8 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
 
     @Override
     protected void appendSummarySize(StringBuffer buffer, String fieldName, int size) {
-        if (obfuscateSummaries) {
+        FieldConfig fieldConfig = fields.get(fieldName);
+        if (fieldConfig != null && fieldConfig.obfuscateSummaries) {
             doAppend(buffer, fieldName, b -> super.appendSummarySize(b, fieldName, size));
         } else {
             super.appendSummarySize(buffer, fieldName, size);
@@ -291,7 +289,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
      * @return A builder that creates obfuscating {@link ToStringStyle} objects that produce output similar to {@link ToStringStyle#DEFAULT_STYLE}.
      */
     public static Builder defaultStyle() {
-        return new Builder(DefaultObfuscatingToStringStyle::new, DefaultObfuscatingToStringStyle::new);
+        return Builder.create(DefaultObfuscatingToStringStyle::new, DefaultObfuscatingToStringStyle::new);
     }
 
     /**
@@ -300,7 +298,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
      * @return A builder that creates obfuscating {@link ToStringStyle} objects that produce output similar to {@link ToStringStyle#MULTI_LINE_STYLE}.
      */
     public static Builder multiLineStyle() {
-        return new Builder(MultiLineObfuscatingToStringStyle::new, MultiLineObfuscatingToStringStyle::new);
+        return Builder.create(MultiLineObfuscatingToStringStyle::new, MultiLineObfuscatingToStringStyle::new);
     }
 
     /**
@@ -311,7 +309,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
      *         {@link ToStringStyle#NO_FIELD_NAMES_STYLE}.
      */
     public static Builder noFieldNamesStyle() {
-        return new Builder(NoFieldNamesObfuscatingToStringStyle::new, NoFieldNamesObfuscatingToStringStyle::new);
+        return Builder.create(NoFieldNamesObfuscatingToStringStyle::new, NoFieldNamesObfuscatingToStringStyle::new);
     }
 
     /**
@@ -322,7 +320,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
      *         {@link ToStringStyle#SHORT_PREFIX_STYLE}.
      */
     public static Builder shortPrefixStyle() {
-        return new Builder(ShortPrefixObfuscatingToStringStyle::new, ShortPrefixObfuscatingToStringStyle::new);
+        return Builder.create(ShortPrefixObfuscatingToStringStyle::new, ShortPrefixObfuscatingToStringStyle::new);
     }
 
     /**
@@ -331,7 +329,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
      * @return A builder that creates obfuscating {@link ToStringStyle} objects that produce output similar to {@link ToStringStyle#SIMPLE_STYLE}.
      */
     public static Builder simpleStyle() {
-        return new Builder(SimpleObfuscatingToStringStyle::new, SimpleObfuscatingToStringStyle::new);
+        return Builder.create(SimpleObfuscatingToStringStyle::new, SimpleObfuscatingToStringStyle::new);
     }
 
     /**
@@ -342,7 +340,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
      *         {@link ToStringStyle#NO_CLASS_NAME_STYLE}.
      */
     public static Builder noClassNameStyle() {
-        return new Builder(NoClassNameObfuscatingToStringStyle::new, NoClassNameObfuscatingToStringStyle::new);
+        return Builder.create(NoClassNameObfuscatingToStringStyle::new, NoClassNameObfuscatingToStringStyle::new);
     }
 
     /**
@@ -368,7 +366,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
      */
     public static Builder recursiveStyle(Predicate<? super Class<?>> recurseIntoPredicate) {
         Objects.requireNonNull(recurseIntoPredicate);
-        return new Builder(builder -> new RecursiveObfuscatingToStringStyle(builder, recurseIntoPredicate),
+        return Builder.create(builder -> new RecursiveObfuscatingToStringStyle(builder, recurseIntoPredicate),
                 snapshot -> new RecursiveObfuscatingToStringStyle(snapshot, recurseIntoPredicate));
     }
 
@@ -395,7 +393,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
      */
     public static Builder multiLineRecursiveStyle(Predicate<? super Class<?>> recurseIntoPredicate) {
         Objects.requireNonNull(recurseIntoPredicate);
-        return new Builder(builder -> new MultiLineRecursiveObfuscatingToStringStyle(builder, recurseIntoPredicate),
+        return Builder.create(builder -> new MultiLineRecursiveObfuscatingToStringStyle(builder, recurseIntoPredicate),
                 snapshot -> new MultiLineRecursiveObfuscatingToStringStyle(snapshot, recurseIntoPredicate));
     }
 
@@ -404,20 +402,17 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
      * <p>
      * In addition, it can create {@link Supplier Suppliers} of obfuscating {@link ToStringStyle} objects. These can be used as a more light-weight
      * way of creating obfuscating {@link ToStringStyle} objects; whereas creating obfuscating {@link ToStringStyle} objects using {@link #build()}
-     * will always call {@link #obfuscators()}, {@link Supplier Suppliers} created using {@link #supplier()} will create obfuscating
+     * will always copy its internal settings, {@link Supplier Suppliers} created using {@link #supplier()} will create obfuscating
      * {@link ToStringStyle} objects from a shared copy instead. You should use {@link #supplier()} instead of {@link #build()} if you plan on
      * creating multiple obfuscating {@link ToStringStyle} objects with the same settings.
      *
      * @author Rob Spoor
      */
-    public static final class Builder {
+    public abstract static class Builder {
 
-        private final Function<? super Builder, ? extends ObfuscatingToStringStyle> fromBuilderConstructor;
-        private final Function<? super Snapshot, ? extends ObfuscatingToStringStyle> fromSnapshotConstructor;
-
-        private final MapBuilder<Obfuscator> obfuscators;
-
-        private boolean obfuscateSummaries = false;
+        private Builder() {
+            super();
+        }
 
         /**
          * Creates a new builder.
@@ -444,7 +439,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
          *     }
          *
          *     public static Builder builder() {
-         *         return new Builder(MyToStringStyle::new, MyToStringStyle::new);
+         *         return Builder.create(MyToStringStyle::new, MyToStringStyle::new);
          *     }
          * }
          * </code></pre>
@@ -453,30 +448,27 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
          *                                   of this builder.
          * @param fromSnapshotConstructor The factory to build {@link ObfuscatingToStringStyle ObfuscatingToStringStyles} based on a snapshot of this
          *                                    builder.
+         * @return The created builder.
          * @throws NullPointerException If either of the given factories is {@code null}.
          */
-        public Builder(Function<? super Builder, ? extends ObfuscatingToStringStyle> fromBuilderConstructor,
+        public static Builder create(Function<? super Builder, ? extends ObfuscatingToStringStyle> fromBuilderConstructor,
                 Function<? super Snapshot, ? extends ObfuscatingToStringStyle> fromSnapshotConstructor) {
 
-            this.fromBuilderConstructor = Objects.requireNonNull(fromBuilderConstructor);
-            this.fromSnapshotConstructor = Objects.requireNonNull(fromSnapshotConstructor);
-
-            obfuscators = new MapBuilder<>();
+            return new ToStringStyleBuilder(fromBuilderConstructor, fromSnapshotConstructor);
         }
 
         /**
          * Adds a field to obfuscate.
-         * This method is an alias for {@link #withField(String, Obfuscator, CaseSensitivity) withField(fieldName, obfuscator, CASE_SENSITIVE)}.
+         * This method is an alias for {@link #withField(String, Obfuscator, CaseSensitivity)} with the last specified default case sensitivity
+         * using {@link #caseSensitiveByDefault()} or {@link #caseInsensitiveByDefault()}. The default is {@link CaseSensitivity#CASE_SENSITIVE}.
          *
          * @param fieldName The name of the field. It will be treated case sensitively.
          * @param obfuscator The obfuscator to use for obfuscating the field.
-         * @return This object.
+         * @return An object that can be used to configure the field, or continue building obfuscating {@link ToStringStyle} objects.
          * @throws NullPointerException If the given field name or obfuscator is {@code null}.
          * @throws IllegalArgumentException If a field with the same name and the same case sensitivity was already added.
          */
-        public Builder withField(String fieldName, Obfuscator obfuscator) {
-            return withField(fieldName, obfuscator, CASE_SENSITIVE);
-        }
+        public abstract FieldConfigurer withField(String fieldName, Obfuscator obfuscator);
 
         /**
          * Adds a field to obfuscate.
@@ -488,21 +480,43 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
          * @throws NullPointerException If the given field name, obfuscator or case sensitivity is {@code null}.
          * @throws IllegalArgumentException If a field with the same name and the same case sensitivity was already added.
          */
-        public Builder withField(String fieldName, Obfuscator obfuscator, CaseSensitivity caseSensitivity) {
-            obfuscators.withEntry(fieldName, obfuscator, caseSensitivity);
-            return this;
-        }
+        public abstract FieldConfigurer withField(String fieldName, Obfuscator obfuscator, CaseSensitivity caseSensitivity);
 
         /**
-         * Sets whether or not to obfuscate summaries as well as details. The default is {@code false}.
+         * Sets the default case sensitivity for new fields to {@link CaseSensitivity#CASE_SENSITIVE}. This is the default setting.
+         * <p>
+         * Note that this will not change the case sensitivity of any field that was already added.
          *
-         * @param obfuscateSummaries {@code true} to obfuscate summaries, {@code false} otherwise.
          * @return This object.
          */
-        public Builder withObfuscatedSummaries(boolean obfuscateSummaries) {
-            this.obfuscateSummaries = obfuscateSummaries;
-            return this;
-        }
+        public abstract Builder caseSensitiveByDefault();
+
+        /**
+         * Sets the default case sensitivity for new entries to {@link CaseSensitivity#CASE_INSENSITIVE}.
+         * <p>
+         * Note that this will not change the case sensitivity of any entry that was already added.
+         *
+         * @return This object.
+         */
+        public abstract Builder caseInsensitiveByDefault();
+
+        /**
+         * Indicates that by default field summaries will be obfuscated.
+         * <p>
+         * Note that this will not change what will be obfuscated for any field that was already added.
+         *
+         * @return This object.
+         */
+        public abstract Builder includeSummariesByDefault();
+
+        /**
+         * Indicates that by default field summaries will not be obfuscated (default).
+         * <p>
+         * Note that this will not change what will be obfuscated for any field that was already added.
+         *
+         * @return This object.
+         */
+        public abstract Builder excludeSummariesByDefault();
 
         /**
          * This method allows the application of a function to this builder.
@@ -517,32 +531,21 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
             return f.apply(this);
         }
 
-        /**
-         * Creates a new immutable map with all added obfuscators.
-         *
-         * @return The created map.
-         */
-        public Map<String, Obfuscator> obfuscators() {
-            return obfuscators.build();
-        }
+        abstract Map<String, FieldConfig> fields();
 
         /**
          * Creates a new snapshot of this builder.
          *
          * @return The created snapshot.
          */
-        public Snapshot snapshot() {
-            return new Snapshot(this);
-        }
+        public abstract Snapshot snapshot();
 
         /**
          * Creates a new obfuscating {@link ToStringStyle} with the fields and obfuscators added to this builder.
          *
          * @return The created obfuscating {@link ToStringStyle}.
          */
-        public ObfuscatingToStringStyle build() {
-            return fromBuilderConstructor.apply(this);
-        }
+        public abstract ObfuscatingToStringStyle build();
 
         /**
          * Creates a new {@link Supplier} that will create obfuscating {@link ToStringStyle} objects with the properties and obfuscators added to this
@@ -556,7 +559,7 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
          */
         public Supplier<ObfuscatingToStringStyle> supplier() {
             Snapshot snapshot = snapshot();
-            return () -> fromSnapshotConstructor.apply(snapshot);
+            return snapshot::build;
         }
 
         /**
@@ -567,32 +570,192 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
          */
         public static final class Snapshot {
 
-            private final Map<String, Obfuscator> obfuscators;
+            private final Function<? super Snapshot, ? extends ObfuscatingToStringStyle> fromSnapshotConstructor;
 
-            private final boolean obfuscateSummaries;
+            private final Map<String, FieldConfig> fields;
 
-            private Snapshot(Builder builder) {
-                obfuscators = builder.obfuscators();
-                obfuscateSummaries = builder.obfuscateSummaries;
+            private Snapshot(ToStringStyleBuilder builder) {
+                fromSnapshotConstructor = builder.fromSnapshotConstructor;
+
+                fields = builder.fields();
+            }
+
+            private Map<String, FieldConfig> fields() {
+                return fields;
             }
 
             /**
-             * Returns an unmodifiable map with all obfuscators.
+             * Creates a new obfuscating {@link ToStringStyle} with the fields and obfuscators in this {@link Builder} snapshot.
              *
-             * @return An unmodifiable map with all obfuscators.
+             * @return The created obfuscating {@link ToStringStyle}.
              */
-            public Map<String, Obfuscator> obfuscators() {
-                return obfuscators;
+            public ObfuscatingToStringStyle build() {
+                return fromSnapshotConstructor.apply(this);
+            }
+        }
+    }
+
+    /**
+     * An object that can be used to configure a field that should be obfuscated.
+     *
+     * @author Rob Spoor
+     */
+    public abstract static class FieldConfigurer extends Builder {
+
+        private FieldConfigurer() {
+            super();
+        }
+
+        /**
+         * Indicates that fields with the current name will have their summaries obfuscated.
+         *
+         * @return This object.
+         */
+        public abstract FieldConfigurer includeSummaries();
+
+        /**
+         * Indicates that fields with the current name will not have their summaries obfuscated.
+         *
+         * @return This object.
+         */
+        public abstract FieldConfigurer excludeSummaries();
+    }
+
+    private static final class ToStringStyleBuilder extends FieldConfigurer {
+
+        private final Function<? super Builder, ? extends ObfuscatingToStringStyle> fromBuilderConstructor;
+        private final Function<? super Snapshot, ? extends ObfuscatingToStringStyle> fromSnapshotConstructor;
+
+        private final MapBuilder<FieldConfig> fields;
+
+        // default settings
+        private boolean obfuscateSummariesByDefault;
+
+        // per field settings
+        private String fieldName;
+        private Obfuscator obfuscator;
+        private CaseSensitivity caseSensitivity;
+        private boolean obfuscateSummaries;
+
+        private ToStringStyleBuilder(Function<? super Builder, ? extends ObfuscatingToStringStyle> fromBuilderConstructor,
+                Function<? super Snapshot, ? extends ObfuscatingToStringStyle> fromSnapshotConstructor) {
+
+            this.fromBuilderConstructor = Objects.requireNonNull(fromBuilderConstructor);
+            this.fromSnapshotConstructor = Objects.requireNonNull(fromSnapshotConstructor);
+
+            fields = new MapBuilder<>();
+
+            obfuscateSummariesByDefault = false;
+        }
+
+        @Override
+        public FieldConfigurer withField(String fieldName, Obfuscator obfuscator) {
+            addLastField();
+
+            fields.testEntry(fieldName);
+
+            this.fieldName = fieldName;
+            this.obfuscator = obfuscator;
+            this.caseSensitivity = null;
+            this.obfuscateSummaries = obfuscateSummariesByDefault;
+
+            return this;
+        }
+
+        @Override
+        public FieldConfigurer withField(String fieldName, Obfuscator obfuscator, CaseSensitivity caseSensitivity) {
+            addLastField();
+
+            fields.testEntry(fieldName, caseSensitivity);
+
+            this.fieldName = fieldName;
+            this.obfuscator = obfuscator;
+            this.caseSensitivity = caseSensitivity;
+            this.obfuscateSummaries = obfuscateSummariesByDefault;
+
+            return this;
+        }
+
+        @Override
+        public Builder caseSensitiveByDefault() {
+            fields.caseSensitiveByDefault();
+            return this;
+        }
+
+        @Override
+        public Builder caseInsensitiveByDefault() {
+            fields.caseInsensitiveByDefault();
+            return this;
+        }
+
+        @Override
+        public Builder includeSummariesByDefault() {
+            obfuscateSummariesByDefault = true;
+            return this;
+        }
+
+        @Override
+        public Builder excludeSummariesByDefault() {
+            obfuscateSummariesByDefault = false;
+            return this;
+        }
+
+        @Override
+        public FieldConfigurer includeSummaries() {
+            obfuscateSummaries = true;
+            return this;
+        }
+
+        @Override
+        public FieldConfigurer excludeSummaries() {
+            obfuscateSummaries = false;
+            return this;
+        }
+
+        @Override
+        Map<String, FieldConfig> fields() {
+            return fields.build();
+        }
+
+        private void addLastField() {
+            if (fieldName != null) {
+                FieldConfig fieldConfig = new FieldConfig(obfuscator, obfuscateSummaries);
+                if (caseSensitivity != null) {
+                    fields.withEntry(fieldName, fieldConfig, caseSensitivity);
+                } else {
+                    fields.withEntry(fieldName, fieldConfig);
+                }
             }
 
-            /**
-             * Returns whether or not to obfuscate summaries as well as details.
-             *
-             * @return {@code true} to obfuscate summaries and details, or {@code false} to only obfuscate details.
-             */
-            public boolean obfuscateSummaries() {
-                return obfuscateSummaries;
-            }
+            fieldName = null;
+            obfuscator = null;
+            caseSensitivity = null;
+            obfuscateSummaries = obfuscateSummariesByDefault;
+        }
+
+        @Override
+        public Snapshot snapshot() {
+            addLastField();
+
+            return new Snapshot(this);
+        }
+
+        @Override
+        public ObfuscatingToStringStyle build() {
+            addLastField();
+
+            return fromBuilderConstructor.apply(this);
+        }
+    }
+
+    private static final class FieldConfig {
+
+        private final Obfuscator obfuscator;
+        private final boolean obfuscateSummaries;
+
+        private FieldConfig(Obfuscator obfuscator, boolean obfuscateSummaries) {
+            this.obfuscator = Objects.requireNonNull(obfuscator);
+            this.obfuscateSummaries = obfuscateSummaries;
         }
     }
 
