@@ -492,9 +492,9 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
         public abstract Builder caseSensitiveByDefault();
 
         /**
-         * Sets the default case sensitivity for new entries to {@link CaseSensitivity#CASE_INSENSITIVE}.
+         * Sets the default case sensitivity for new fields to {@link CaseSensitivity#CASE_INSENSITIVE}.
          * <p>
-         * Note that this will not change the case sensitivity of any entry that was already added.
+         * Note that this will not change the case sensitivity of any field that was already added.
          *
          * @return This object.
          */
