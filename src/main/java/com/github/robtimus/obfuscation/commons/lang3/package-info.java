@@ -16,7 +16,7 @@
  */
 
 /**
- * Contains classes and interfaces for obfuscating objects using <a href="http://commons.apache.org/proper/commons-lang/">Apache Commons Lang</a>
+ * Contains classes and interfaces for obfuscating objects using <a href="https://commons.apache.org/proper/commons-lang/">Apache Commons Lang</a>
  * version 3.
  *
  * @author Rob Spoor
