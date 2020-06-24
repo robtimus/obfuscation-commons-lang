@@ -897,10 +897,8 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
         @Override
         protected void appendDetail(StringBuffer buffer, String fieldName, Object value) {
             if (shouldRecurseInto(value)) {
-                doAppend(buffer, fieldName, b -> {
-                    // ignore the result of toString(), since the new ReflectionToStringBuilder will share the buffer and append directly to it
-                    new ReflectionToStringBuilder(value, this, b).toString();
-                });
+                // ignore the result of toString(), since the new ReflectionToStringBuilder will share the buffer and append directly to it
+                doAppend(buffer, fieldName, b -> new ReflectionToStringBuilder(value, this, b).toString());
             } else {
                 super.appendDetail(buffer, fieldName, value);
             }
@@ -985,10 +983,8 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
             if (shouldRecurseInto(value)) {
                 increaseIndent();
                 try {
-                    doAppend(buffer, fieldName, b -> {
-                        // ignore the result of toString(), since the new ReflectionToStringBuilder will share the buffer and append directly to it
-                        new ReflectionToStringBuilder(value, this, b).toString();
-                    });
+                    // ignore the result of toString(), since the new ReflectionToStringBuilder will share the buffer and append directly to it
+                    doAppend(buffer, fieldName, b -> new ReflectionToStringBuilder(value, this, b).toString());
                 } finally {
                     decreaseIndent();
                 }
