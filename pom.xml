@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.github.robtimus</groupId>
     <artifactId>robtimus-parent</artifactId>
-    <version>1.1</version>
+    <version>1.1.2</version>
     <relativePath />
   </parent>
 
@@ -62,8 +62,8 @@
   </issueManagement>
 
   <properties>
-    <version.commons-lang3>3.10</version.commons-lang3>
-    <version.obfuscation-core>1.1</version.obfuscation-core>
+    <version.commons-lang3>3.11</version.commons-lang3>
+    <version.obfuscation-core>1.2</version.obfuscation-core>
   </properties>
 
   <dependencies>
