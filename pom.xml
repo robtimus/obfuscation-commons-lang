@@ -252,8 +252,7 @@
 
   <profiles>
     <profile>
-      <!-- profile to test against the minimum support Apache Commons Lang versions -->
-      <id>commons-lang-min-versions</id>
+      <id>min-versions</id>
       <properties>
         <version.commons-lang3>3.1</version.commons-lang3>
       </properties>
