@@ -255,7 +255,8 @@
     <profile>
       <id>min-versions</id>
       <properties>
-        <version.commons-lang3>3.1</version.commons-lang3>
+        <!-- Versions from 3.1 and up should work, but in 3.10 the property order has changed, leading to test failures when using older versions -->
+        <version.commons-lang3>3.10</version.commons-lang3>
       </properties>
     </profile>
 
