@@ -651,7 +651,7 @@ class ObfuscatingToStringStyleTest {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        return sb.toString();
+        return sb.toString().replace("\r\n", "\n");
     }
 
     @SuppressWarnings("unused")
