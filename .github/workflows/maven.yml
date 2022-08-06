@@ -30,7 +30,7 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
       - name: Build with Maven
-        run: mvn package --file pom.xml -B --no-transfer-progress
+        run: mvn package --file pom.xml -B --no-transfer-progress -Duser.timezone="Europe/Amsterdam"
 
   min-versions:
     runs-on: ubuntu-latest
@@ -45,7 +45,7 @@ jobs:
       - name: Build with Maven
         run: mvn compile --file pom.xml -B --no-transfer-progress
       - name: Test with Maven
-        run: mvn test --file pom.xml -B --no-transfer-progress -Pmin-versions
+        run: mvn test --file pom.xml -B --no-transfer-progress -Duser.timezone="Europe/Amsterdam" -Pmin-versions
 
   native-module:
     runs-on: ubuntu-latest
@@ -58,7 +58,7 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
       - name: Build with Maven
-        run: mvn package --file pom.xml -B --no-transfer-progress -Pnative-module
+        run: mvn package --file pom.xml -B --no-transfer-progress -Duser.timezone="Europe/Amsterdam" -Pnative-module
 
   site:
     runs-on: ubuntu-latest
