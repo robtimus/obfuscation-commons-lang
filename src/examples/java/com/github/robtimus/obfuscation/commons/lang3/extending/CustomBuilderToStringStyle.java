@@ -27,8 +27,7 @@ import com.github.robtimus.obfuscation.support.CaseSensitivity;
 /*
  * A sub class of ObfuscatingToStringStyle that uses a custom builder. This builder will use an ObfuscatingToStringStyle.Builder Builder as delegate.
  */
-@SuppressWarnings("javadoc")
-public final class CustomBuilderToStringStyle extends ObfuscatingToStringStyle {
+final class CustomBuilderToStringStyle extends ObfuscatingToStringStyle {
 
     private static final long serialVersionUID = 1L;
 

@@ -23,8 +23,7 @@ import com.github.robtimus.obfuscation.commons.lang3.ObfuscatingToStringStyle.Bu
 /*
  * A sub class of ObfuscatingToStringStyle that reuses ObfuscatingToStringStyle.Builder directly.
  */
-@SuppressWarnings("javadoc")
-public final class ReusingBuilderToStringStyle extends ObfuscatingToStringStyle {
+final class ReusingBuilderToStringStyle extends ObfuscatingToStringStyle {
 
     private static final long serialVersionUID = 1L;
 
