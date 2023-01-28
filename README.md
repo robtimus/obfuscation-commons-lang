@@ -1,4 +1,9 @@
 # obfuscation-commons-lang
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.robtimus/obfuscation-commons-lang)](https://search.maven.org/artifact/com.github.robtimus/obfuscation-commons-lang)
+[![Build Status](https://github.com/robtimus/obfuscation-commons-lang/actions/workflows/build.yml/badge.svg)](https://github.com/robtimus/obfuscation-commons-lang/actions/workflows/build.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.github.robtimus%3Aobfuscation-commons-lang&metric=alert_status)](https://sonarcloud.io/summary/overall?id=com.github.robtimus%3Aobfuscation-commons-lang)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=com.github.robtimus%3Aobfuscation-commons-lang&metric=coverage)](https://sonarcloud.io/summary/overall?id=com.github.robtimus%3Aobfuscation-commons-lang)
+[![Known Vulnerabilities](https://snyk.io/test/github/robtimus/obfuscation-commons-lang/badge.svg)](https://snyk.io/test/github/robtimus/obfuscation-commons-lang)
 
 Provides extensions to [Apache Commons Lang](https://commons.apache.org/proper/commons-lang/) for obfuscating objects.
 
