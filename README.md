@@ -12,9 +12,11 @@ Currently it has one extension: an obfuscating [ToStringStyle](https://commons.a
 To create an obfuscating `ToStringStyle`, use one of the factory methods of class 
 [ObfuscatingToStringStyle](https://robtimus.github.io/obfuscation-commons-lang/apidocs/com/github/robtimus/obfuscation/commons/lang3/ObfuscatingToStringStyle.html) to create a builder, add fields, and build the result. For instance, using the default style:
 
-    ToStringStyle style = ObfuscatingToStringStyle.defaultStyle()
-            .withField("password", Obfuscator.fixedLength(3))
-            .build();
+```java
+ToStringStyle style = ObfuscatingToStringStyle.defaultStyle()
+        .withField("password", Obfuscator.fixedLength(3))
+        .build();
+```
 
 ## Available styles
 
@@ -26,22 +28,26 @@ Most of the styles available in Apache Commons Lang 3 are all immutable. The sam
 
 However, it is possible to create immutable _suppliers_ instead:
 
-    Supplier<? extends ToStringStyle> styleSupplier = ObfuscatingToStringStyle.defaultStyle()
-            .withField("password", Obfuscator.fixedLength(3))
-            .supplier();
+```java
+Supplier<? extends ToStringStyle> styleSupplier = ObfuscatingToStringStyle.defaultStyle()
+        .withField("password", Obfuscator.fixedLength(3))
+        .supplier();
+```
 
 The difference between using `build()` and using `supplier()` is that `supplier()` is more light-weight if you need to create multiple styles with the same settings. Such a supplier can be used directly or using `ThreadLocal`. For instance, in a class:
 
-    private static final Supplier<? extends ToStringStyle> TO_STRING_STYLE = ObfuscatingToStringStyle.defaultStyle()
-            ...
-            .supplier();
-    
-    ...
-    
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, TO_STRING_STYLE.get());
-    }
+```java
+private static final Supplier<? extends ToStringStyle> TO_STRING_STYLE = ObfuscatingToStringStyle.defaultStyle()
+        ...
+        .supplier();
+
+...
+
+@Override
+public String toString() {
+    return ToStringBuilder.reflectionToString(this, TO_STRING_STYLE.get());
+}
+```
 
 ## Serializability
 
