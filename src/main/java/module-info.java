@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
+/**
+ * Provides functionality for obfuscating objects using Apache Commons Lang.
+ */
 module com.github.robtimus.obfuscation.commons.lang {
     requires transitive com.github.robtimus.obfuscation;
     requires transitive org.apache.commons.lang3;
