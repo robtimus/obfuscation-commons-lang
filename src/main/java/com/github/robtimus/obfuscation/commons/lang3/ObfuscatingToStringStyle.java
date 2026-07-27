@@ -951,6 +951,8 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
         }
 
         /**
+         * Returns indentation following a prefix.
+         *
          * @return prefix + line separator + indent
          */
         private String indented(char prefix, String lineSeparator, int indentLevel) {
@@ -962,6 +964,8 @@ public abstract class ObfuscatingToStringStyle extends ToStringStyle {
         }
 
         /**
+         * Returns indentation followed by a postfix.
+         *
          * @return line separator + indent + postfix
          */
         private String indented(String lineSeparator, int indentLevel, char postfix) {
