@@ -62,7 +62,7 @@
   </issueManagement>
 
   <properties>
-    <version.java>11</version.java>
+    <version.java>17</version.java>
 
     <version.commons-lang3>3.18.0</version.commons-lang3>
     <version.obfuscation-core>1.5</version.obfuscation-core>
